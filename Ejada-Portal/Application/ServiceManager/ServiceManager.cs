@@ -16,10 +16,11 @@ namespace Application.ServiceManager
             UserManager<User> userManager,
             SignInManager<User> signInManager,
             ApplicationDbContext db,
-            IEmailSender emailSender) // أضفت IEmailSender هنا
+            IEmailSender emailSender,
+            IEmailTemplateRenderer templateRenderer) 
         {
             _userService = new Lazy<IUserService>(
-                () => new UserService(unitOfWork, userManager, signInManager, emailSender)
+                () => new UserService(unitOfWork, userManager, signInManager, emailSender,templateRenderer)
             );
         }
 

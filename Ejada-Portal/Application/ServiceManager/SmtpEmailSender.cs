@@ -1,43 +1,35 @@
-﻿using System.Net;
-using System.Net.Mail;
-using Microsoft.Extensions.Configuration;
+﻿using Application.ServiceManager;
+using MailKit.Net.Smtp;
+using MailKit.Security;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using MimeKit;
 
 namespace Application.ServiceManager
 {
     public class SmtpEmailSender : IEmailSender
     {
-        private readonly IConfiguration _cfg;
-        public SmtpEmailSender(IConfiguration cfg) => _cfg = cfg;
+        private readonly SmtpOptions _opt; private readonly ILogger<SmtpEmailSender> _log;
+        public SmtpEmailSender(IOptions<SmtpOptions> opt, ILogger<SmtpEmailSender> log) { _opt = opt.Value; _log = log; }
 
         public async Task SendAsync(string toEmail, string subject, string htmlBody)
         {
-            var host = _cfg["Smtp:Host"];
-            var port = int.Parse(_cfg["Smtp:Port"] ?? "2525");
-            var enableSsl = bool.TryParse(_cfg["Smtp:EnableSsl"], out var ssl) ? ssl : false;
-            var user = _cfg["Smtp:User"];
-            var pass = _cfg["Smtp:Pass"];
-            var from = _cfg["Smtp:From"] ?? "EjadaPortal_Admin@gmail.com";
-            var fromName = _cfg["Smtp:FromDisplayName"] ?? from;
+            if (string.IsNullOrWhiteSpace(_opt.Host) || string.IsNullOrWhiteSpace(_opt.User) || string.IsNullOrWhiteSpace(_opt.Pass))
+                throw new InvalidOperationException("SMTP settings missing (Host/User/Pass).");
 
-            using var client = new SmtpClient(host!, port)
-            {
-                EnableSsl = enableSsl,
-                DeliveryMethod = SmtpDeliveryMethod.Network,
-                UseDefaultCredentials = false
-            };
-            if (!string.IsNullOrWhiteSpace(user))
-                client.Credentials = new NetworkCredential(user, pass);
+            var from = _opt.From ?? _opt.User;
+            var msg = new MimeMessage();
+            msg.From.Add(new MailboxAddress(_opt.FromDisplayName ?? "Ejada Portal", from));
+            msg.To.Add(MailboxAddress.Parse(toEmail));
+            msg.Subject = subject;
+            msg.Body = new BodyBuilder { HtmlBody = htmlBody }.ToMessageBody();
 
-            using var msg = new MailMessage
-            {
-                From = new MailAddress(from, fromName),
-                Subject = subject,
-                Body = htmlBody,
-                IsBodyHtml = true
-            };
-            msg.To.Add(new MailAddress(toEmail));
-
-            await client.SendMailAsync(msg);
+            using var client = new SmtpClient();
+            await client.ConnectAsync(_opt.Host, _opt.Port, SecureSocketOptions.StartTls);
+            await client.AuthenticateAsync(_opt.User, _opt.Pass);
+            await client.SendAsync(msg);
+            await client.DisconnectAsync(true);
+            _log.LogInformation("Email sent to {to}", toEmail);
         }
     }
 }

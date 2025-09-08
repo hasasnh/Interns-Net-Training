@@ -119,11 +119,9 @@ namespace Ejada_Portal.Controllers
             if (!ModelState.IsValid) return View(model);
 
             var baseUrl = Url.Action(nameof(ResetPassword), "User", null, Request.Scheme)!;
-
             try
             {
                 var sent = await _serviceManager.UserService.SendPasswordResetLinkAsync(model.Email, baseUrl);
-
                 if (!sent)
                 {
                     ModelState.AddModelError(nameof(model.Email), "The email you entered does not exist in the system.");
@@ -135,10 +133,11 @@ namespace Ejada_Portal.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError(string.Empty, "تعذَّر إرسال البريد. تأكّد من تشغيل SMTP محليًا (smtp4dev) أو استخدم Pickup Folder.");
-                return View(model);
+                TempData["error"] = "تعذَّر إرسال البريد. تأكّد من إعدادات Gmail (App Password/Host/Port/StartTLS).";
+                return RedirectToAction(nameof(ForgotPassword));
             }
         }
+
 
 
         [HttpGet, AllowAnonymous]

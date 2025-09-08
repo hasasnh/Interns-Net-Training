@@ -4,7 +4,6 @@ using Infrastructure.Data;
 using Infrastructure.Repository;
 using Infrastructure.Repository.IRepository;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,8 +18,12 @@ builder.Services.AddIdentity<User, IdentityRole>()
     .AddDefaultTokenProviders();
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped<Application.ServiceManager.IEmailSender,SmtpEmailSender>();
 builder.Services.AddScoped<IServiceManager, ServiceManager>();
+
+builder.Services.Configure<SmtpOptions>(builder.Configuration.GetSection("Smtp"));
+builder.Services.AddScoped<IEmailSender, SmtpEmailSender>();
+builder.Services.AddScoped<IEmailTemplateRenderer, FileEmailTemplateRenderer>();
+
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
