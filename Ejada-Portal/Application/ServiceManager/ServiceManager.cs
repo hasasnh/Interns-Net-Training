@@ -10,14 +10,20 @@ namespace Application.ServiceManager
     public class ServiceManager : IServiceManager
     {
         private readonly Lazy<IUserService> _userService;
-        public ServiceManager(IUnitOfWork unitOfWork,
+
+        public ServiceManager(
+            IUnitOfWork unitOfWork,
             UserManager<User> userManager,
             SignInManager<User> signInManager,
-            ApplicationDbContext db)
+            ApplicationDbContext db,
+            IEmailSender emailSender,
+            IEmailTemplateRenderer templateRenderer) 
         {
-            _userService = new Lazy<IUserService>(() => new UserService(unitOfWork, userManager, signInManager));
+            _userService = new Lazy<IUserService>(
+                () => new UserService(unitOfWork, userManager, signInManager, emailSender,templateRenderer)
+            );
         }
-        public IUserService UserService => _userService.Value;
 
+        public IUserService UserService => _userService.Value;
     }
 }

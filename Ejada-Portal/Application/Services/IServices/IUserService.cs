@@ -13,5 +13,8 @@ namespace Application.Services.IServices
         Task<IdentityResult> Register(User user, string password);
         Task<SignInResult> CheckPassword(string userName, string password);
         Task SignOut();
+
+        Task<bool> SendPasswordResetLinkAsync(string email, string baseResetUrl);
+        Task<IdentityResult> ResetPasswordAsync(string email, string tokenEnc, string newPassword);
     }
 }
