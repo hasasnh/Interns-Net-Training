@@ -10,44 +10,85 @@
     <link rel="stylesheet" href="~/Ejada-Portal.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <!-- Mohammad Al-Khalaileh->
+    <link rel="canonical" href="https://preview.keenthemes.com/metronic8" />
+	<link rel="shortcut icon" href="assets/media/logos/ejada-logo-sm.png" />
+    <!--begin::Fonts-->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" />
+    <!--end::Fonts-->
+    <!--begin::Vendor Stylesheets(used by this page)-->
+    <link href="assets/plugins/custom/fullcalendar/fullcalendar.bundle.css" rel="stylesheet" type="text/css" />
+    <link href="assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
+    <!--end::Vendor Stylesheets-->
+    <!--begin::Global Stylesheets Bundle(used by all pages)-->
+    <link href="assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
+    <link href="assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
+    <!--end::Global Stylesheets Bundle-->
+    <!-- Mohammad Al-Khalaileh-->
+
+
+
 </head>
 <body>
     @if (User.Identity.IsAuthenticated)
     {
-        <header>
-            <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-                <div class="container-fluid">
-                    <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Portal</a>
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                            aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                        <ul class="navbar-nav flex-grow-1">
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                            </li>
-                        </ul>
-                        @await Html.PartialAsync("_LoginPartial")
-                    </div>
-                </div>
-            </nav>
-        </header>
-    }
-    <div class="container">
-        <main role="main" class="pb-3">
-            <partial name="_Notification" />
-            @RenderBody()
-        </main>
-    </div>
+				<!--Start: Header-->
+			@await	Html.PartialAsync("_Header")
+				<!--end Header-->
+
+		<div class="d-flex flex-row flex-column-fluid">
+				<!--Start: Sidebar -->
+			@await Html.PartialAsync("_Sidebar")
+				<!--end: Sidebar -->
+			<!-- Main Wrapper -->
+			<div class="app-wrapper d-flex flex-column flex-row-fluid" id="kt_app_wrapper">
+				<div class="app-main flex-column flex-row-fluid">
+					<div class="d-flex flex-column flex-column-fluid">
+						<div class="app-content flex-column-fluid">
+							<div class="container">
+								@RenderBody()
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	}
 
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+	<!--begin::Javascript-->
+	<script>var hostUrl = "assets/";</script>
+	<!--begin::Global Javascript Bundle(used by all pages)-->
+	<script src="assets/plugins/global/plugins.bundle.js"></script>
+	<script src="assets/js/scripts.bundle.js"></script>
+	<!--end::Global Javascript Bundle-->
+	<!--begin::Vendors Javascript(used by this page)-->
+	<script src="assets/plugins/custom/fullcalendar/fullcalendar.bundle.js"></script>
+	<script src="https://cdn.amcharts.com/lib/5/index.js"></script>
+	<script src="https://cdn.amcharts.com/lib/5/xy.js"></script>
+	<script src="https://cdn.amcharts.com/lib/5/percent.js"></script>
+	<script src="https://cdn.amcharts.com/lib/5/radar.js"></script>
+	<script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
+	<script src="https://cdn.amcharts.com/lib/5/map.js"></script>
+	<script src="https://cdn.amcharts.com/lib/5/geodata/worldLow.js"></script>
+	<script src="https://cdn.amcharts.com/lib/5/geodata/continentsLow.js"></script>
+	<script src="https://cdn.amcharts.com/lib/5/geodata/usaLow.js"></script>
+	<script src="https://cdn.amcharts.com/lib/5/geodata/worldTimeZonesLow.js"></script>
+	<script src="https://cdn.amcharts.com/lib/5/geodata/worldTimeZoneAreasLow.js"></script>
+	<script src="assets/plugins/custom/datatables/datatables.bundle.js"></script>
+	<!--end::Vendors Javascript-->
+	<!--begin::Custom Javascript(used by this page)-->
+	<script src="assets/js/widgets.bundle.js"></script>
+	<script src="assets/js/custom/widgets.js"></script>
+	<script src="assets/js/custom/apps/chat/chat.js"></script>
+	<script src="assets/js/custom/utilities/modals/upgrade-plan.js"></script>
+	<script src="assets/js/custom/utilities/modals/create-app.js"></script>
+	<script src="assets/js/custom/utilities/modals/new-target.js"></script>
+	<script src="assets/js/custom/utilities/modals/users-search.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
