@@ -1,9 +1,11 @@
 using Application.DTOs;  
-using Application.ServiceManager;  
+using Application.ServiceManager;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;  
   
 namespace Ejada_Portal.Controllers  
-{  
+{
+    [Authorize]
     public class ContributorController : Controller  
     {  
         private readonly IServiceManager _serviceManager;  
