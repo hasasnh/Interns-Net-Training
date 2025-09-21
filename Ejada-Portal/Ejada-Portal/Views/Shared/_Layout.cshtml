@@ -30,12 +30,11 @@
 
 </head>
 <body>
-    @if (User.Identity.IsAuthenticated)
-    {
-				<!--Start: Header-->
-			@await	Html.PartialAsync("_Header")
-				<!--end Header-->
-
+    @* @if (User.Identity.IsAuthenticated)
+    { *@
+		<!--Start: Header-->
+		@await Html.PartialAsync("_Header")
+		<!--end Header-->
 		<div class="d-flex flex-row flex-column-fluid">
 				<!--Start: Sidebar -->
 			@await Html.PartialAsync("_Sidebar")
@@ -54,7 +53,7 @@
 			</div>
 		</div>
 
-	}
+	@* } *@
 
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

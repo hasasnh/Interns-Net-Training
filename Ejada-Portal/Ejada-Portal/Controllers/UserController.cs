@@ -1,6 +1,7 @@
 ﻿using Application.DTOs;
 using Application.ServiceManager;
 using Application.Services.IServices;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,11 +15,22 @@ namespace Ejada_Portal.Controllers
         {
             _serviceManager = serviceManager;
         }
-        [AllowAnonymous]
-        public IActionResult Registration()
+        // ************** to route to IdentityServer registration page **************
+
+        [HttpGet]
+        public IActionResult Register()
         {
             return View();
         }
+
+        // ************** to route to IdentityServer registration page **************
+
+
+        //[AllowAnonymous]
+        //public IActionResult Registration()
+        //{
+        //    return View();
+        //}
         [HttpPost]
         [AllowAnonymous]
         public async Task<IActionResult> Registration(UserDTO userDTO)
@@ -51,11 +63,26 @@ namespace Ejada_Portal.Controllers
             }
             return View();
         }
-        [AllowAnonymous]
-        public IActionResult Login()
+
+        // ************** to route to IdentityServer login page **************
+
+        [HttpGet]
+     [Authorize]
+        public async Task<IActionResult> Login()
         {
-            return View();
+            var accessToken = await HttpContext.GetTokenAsync("access_token");
+            return RedirectToAction(nameof(Index), "Home");
+
         }
+
+        // ************** to route to IdentityServer login page **************
+
+
+        //[AllowAnonymous]
+        //public IActionResult Login()
+        //{
+        //    return View();
+        //}
 
         [HttpPost]
         [AllowAnonymous]
@@ -90,15 +117,23 @@ namespace Ejada_Portal.Controllers
             }
             return View();
         }
-
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> LogOut()
+        // ************** to logout only from session **************
+        public async Task<IActionResult> Logout()
         {
-            await _serviceManager.UserService.SignOut();
-            TempData["success"] = "Logged out Successfully";
-            return RedirectToAction("Registration");
+            await HttpContext.SignOutAsync();
+            SignOut("Cookies", "oidc");
+            return RedirectToAction("Index", "Home");
         }
+        // ************** to logout only from session **************
+
+
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> LogOut()
+        //{
+        //    await _serviceManager.UserService.SignOut();
+        //    TempData["success"] = "Logged out Successfully";
+        //    return RedirectToAction("Registration");
+        //}
     }
 }
