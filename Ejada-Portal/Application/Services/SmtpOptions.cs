@@ -1,4 +1,4 @@
-﻿namespace Application.ServiceManager
+﻿namespace Application.Services
 {
     public class SmtpOptions
     {

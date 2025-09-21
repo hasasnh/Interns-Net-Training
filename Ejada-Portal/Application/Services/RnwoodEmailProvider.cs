@@ -1,9 +1,10 @@
 ﻿using System.Net;
 using System.Net.Mail;
+using Application.Services.IServices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace Application.ServiceManager
+namespace Application.Services
 {
     public class RnwoodEmailProvider : IEmailProvider
     {

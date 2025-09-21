@@ -1,8 +1,9 @@
 ﻿using System.Text;
+using Application.Services.IServices;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace Application.ServiceManager
+namespace Application.Services
 {
     public class FileEmailTemplateRenderer : IEmailTemplateRenderer
     {

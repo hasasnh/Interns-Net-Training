@@ -1,10 +1,11 @@
-﻿using MailKit.Net.Smtp;
+﻿using Application.Services.IServices;
+using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MimeKit;
 
-namespace Application.ServiceManager
+namespace Application.Services
 {
     public class GmailEmailProvider : IEmailProvider
     {
