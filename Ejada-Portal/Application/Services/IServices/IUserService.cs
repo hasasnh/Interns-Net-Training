@@ -1,6 +1,7 @@
 ﻿using Application.DTOs;
 using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
+using System.Threading.Tasks;
 
 namespace Application.Services.IServices
 {
@@ -13,5 +14,11 @@ namespace Application.Services.IServices
         Task<IdentityResult> Register(User user, string password);
         Task<SignInResult> CheckPassword(string userName, string password);
         Task SignOut();
+
+        Task<bool> SendPasswordResetLinkAsync(string email, string baseResetUrl);
+        Task<bool> SendPasswordResetLinkAsync(string email, string baseResetUrl, string providerName);
+
+        Task<IdentityResult> ResetPasswordAsync(string email, string tokenEnc, string newPassword);
+        Task<IdentityResult> ResetPasswordAsync(string email, string tokenEnc, string newPassword, string providerName);
     }
 }

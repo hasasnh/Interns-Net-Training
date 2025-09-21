@@ -40,13 +40,13 @@ namespace Ejada_IdentityServer
                 // interactive ASP.NET Core Web App
                 new Client
                 {
-                    ClientId = "Portal",
+                    ClientId = "magic",
                     ClientSecrets = { new Secret("secret".Sha256()) },
                     AllowedGrantTypes = GrantTypes.Code,
                     RequirePkce = true,
                     RequireClientSecret = true,
                     AllowedCorsOrigins = { "https://localhost:7002" },  
-                    AllowedScopes = { "Portal",
+                    AllowedScopes = { "magic",
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
                         IdentityServerConstants.StandardScopes.Email,
