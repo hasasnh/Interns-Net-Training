@@ -25,26 +25,30 @@
     <link href="~/assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
-    @if (User.Identity.IsAuthenticated)
-    {
-        @await Html.PartialAsync("_Header")
+    @* @if (User.Identity.IsAuthenticated)
+    { *@
+		<!--Start: Header-->
+		@await Html.PartialAsync("_Header")
+		<!--end Header-->
+		<div class="d-flex flex-row flex-column-fluid">
+				<!--Start: Sidebar -->
+			@await Html.PartialAsync("_Sidebar")
+				<!--end: Sidebar -->
+			<!-- Main Wrapper -->
+			<div class="app-wrapper d-flex flex-column flex-row-fluid" id="kt_app_wrapper">
+				<div class="app-main flex-column flex-row-fluid">
+					<div class="d-flex flex-column flex-column-fluid">
+						<div class="app-content flex-column-fluid">
+							<div class="container">
+								@RenderBody()
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
 
-        <div class="d-flex flex-row flex-column-fluid">
-            @await Html.PartialAsync("_Sidebar")
-
-            <div class="app-wrapper d-flex flex-column flex-row-fluid" id="kt_app_wrapper">
-                <div class="app-main flex-column flex-row-fluid">
-                    <div class="d-flex flex-column flex-column-fluid">
-                        <div class="app-content flex-column-fluid">
-                            <div class="container">
-                                @RenderBody()
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    }
+	@* } *@
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

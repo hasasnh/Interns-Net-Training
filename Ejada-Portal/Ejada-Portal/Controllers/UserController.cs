@@ -2,6 +2,7 @@
 using Application.ServiceManager;
 using Application.Services.IServices;
 using Ejada_Portal.Models;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,10 +16,16 @@ namespace Ejada_Portal.Controllers
         {
             _serviceManager = serviceManager;
         }
+        // ************** to route to IdentityServer registration page **************
 
-        // ---------------- Registration/Login ----------------
-        [AllowAnonymous]
-        public IActionResult Registration() => View();
+        [HttpGet]
+        public IActionResult Register()
+        {
+            return View();
+        }
+
+        // ************** to route to IdentityServer registration page **************
+
 
         [HttpPost]
         [AllowAnonymous]
@@ -49,44 +56,60 @@ namespace Ejada_Portal.Controllers
             return View();
         }
 
-        [AllowAnonymous]
-        public IActionResult Login() => View();
+        // ************** to route to IdentityServer login page **************
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> Login()
+        {
+            var accessToken = await HttpContext.GetTokenAsync("access_token");
+            return RedirectToAction(nameof(Index), "Home");
+
+        }
+
+        // ************** to route to IdentityServer login page **************
 
         [HttpPost]
         [AllowAnonymous]
         public async Task<IActionResult> Login(UserDTO userDTO)
         {
-            if (!ModelState.IsValid) return View();
-
-            var objUser = _serviceManager.UserService.CheckUser(userDTO.Email, userDTO.Username);
-            if (objUser == null)
+            if (ModelState.IsValid)
             {
-                ModelState.AddModelError(string.Empty, "Username or Email does not exists");
-                TempData["error"] = "Username or Email does not exists";
-                return View();
-            }
+                var objUser = _serviceManager.UserService.CheckUser(userDTO.Email, userDTO.Username);
+                if (objUser != null)
+                {
+                    var result = await _serviceManager.UserService.CheckPassword(objUser.UserName, userDTO.Password);
+                    if (result.Succeeded)
+                    {
+                        await _serviceManager.UserService.Login(objUser);
+                        TempData["success"] = "Logged in Successfully";
+                        return RedirectToAction("Index", "Home");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, "Invalid Password");
+                        TempData["error"] = "Invalid Password";
+                        return View();
+                    }
 
-            var result = await _serviceManager.UserService.CheckPassword(objUser.UserName, userDTO.Password);
-            if (!result.Succeeded)
-            {
-                ModelState.AddModelError(string.Empty, "Invalid Password");
-                TempData["error"] = "Invalid Password";
-                return View();
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "Username or Email does not exists");
+                    TempData["error"] = "Username or Email does not exists";
+                    return View();
+                }
             }
-
-            await _serviceManager.UserService.Login(objUser);
-            TempData["success"] = "Logged in Successfully";
+            return View();
+        }
+        // ************** to logout only from session **************
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync();
+            SignOut("Cookies", "oidc");
             return RedirectToAction("Index", "Home");
         }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> LogOut()
-        {
-            await _serviceManager.UserService.SignOut();
-            TempData["success"] = "Logged out Successfully";
-            return RedirectToAction("Registration");
-        }
+        // ************** to logout only from session **************
 
         // ---------------- Forgot Password ----------------
         [HttpGet, AllowAnonymous]
