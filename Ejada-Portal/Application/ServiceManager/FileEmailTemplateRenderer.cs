@@ -1,5 +1,9 @@
 ﻿using System.Text;
+<<<<<<< HEAD
 using Microsoft.Extensions.Hosting;              // IHostEnvironment
+=======
+using Microsoft.Extensions.Hosting;
+>>>>>>> development
 using Microsoft.Extensions.Logging;
 
 namespace Application.ServiceManager

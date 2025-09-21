@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using Application.DTOs;
-using Application.ServiceManager;                
+using Application.ServiceManager;
 using Application.Services.IServices;
 using Domain.Entities;
 using Infrastructure.Repository.IRepository;
@@ -16,21 +17,21 @@ namespace Application.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
-        private readonly IEmailSender _emailSender;
-        private readonly IEmailTemplateRenderer _template;   // ✅ جديد
+        private readonly IEmailProviderResolver _resolver;
+        private readonly IEmailTemplateRenderer _template;
 
         public UserService(
             IUnitOfWork unitOfWork,
             UserManager<User> userManager,
             SignInManager<User> signInManager,
-            IEmailSender emailSender,
+            IEmailProviderResolver resolver,
             IEmailTemplateRenderer templateRenderer)
         {
             _unitOfWork = unitOfWork;
             _userManager = userManager;
             _signInManager = signInManager;
-            _emailSender = emailSender;
-            _template = templateRenderer;
+            _resolver = resolver ?? throw new ArgumentNullException(nameof(resolver));
+            _template = templateRenderer ?? throw new ArgumentNullException(nameof(templateRenderer));
         }
 
         public async Task<SignInResult> CheckPassword(string userName, string password)
@@ -63,55 +64,77 @@ namespace Application.Services
         public async Task SignOut()
             => await _signInManager.SignOutAsync();
 
-        //New Code --Mohammad Musatfa--
+        // -- Mohammad Mustafa --
+
+        //If a provider name is not provided, it defaults to Gmail
         public async Task<bool> SendPasswordResetLinkAsync(string email, string baseResetUrl)
+        {
+            return await SendPasswordResetLinkAsync(email, baseResetUrl, "Gmail");
+        }
+
+
+        public async Task<bool> SendPasswordResetLinkAsync(string email, string baseResetUrl, string providerName)
         {
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null) return false;
 
-            // توليد التوكن وترميزه Base64Url
+            var tokens = await BuildEmailTokens(user, baseResetUrl);
+            var body = await _template.RenderAsync("ResetPassword.html", tokens);
+            var subject = $"Reset Password - {tokens["DisplayName"]}";
+
+            IEmailProvider provider;
+            try
+            {
+                provider = _resolver.Get(string.IsNullOrWhiteSpace(providerName) ? "Gmail" : providerName);
+            }
+            catch
+            {
+                provider = _resolver.Get("Gmail");
+            }
+
+            await provider.SendAsync(user.Email!, subject, body);
+            return true;
+        }
+
+        // If a provider name is not provided, it defaults to Gmail  
+       public async Task<IdentityResult> ResetPasswordAsync(string email, string tokenEnc, string newPassword)
+        {
+            return await ResetPasswordAsync(email, tokenEnc, newPassword, "Gmail");
+        }
+     
+
+        public async Task<IdentityResult> ResetPasswordAsync(string email, string tokenEnc, string newPassword, string providerName)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+                return IdentityResult.Failed(new IdentityError { Description = "User not found." });
+
+            var decoded = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(tokenEnc));
+            var result = await _userManager.ResetPasswordAsync(user, decoded, newPassword);
+            if (!result.Succeeded) return result;
+
+            return result;
+        }
+
+   
+        private async Task<Dictionary<string, string>> BuildEmailTokens(User user, string baseResetUrl)
+        {
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
             var tokenEnc = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
 
-            // بناء الرابط الكامل
-            var fullLink =
-                $"{baseResetUrl}?email={Uri.EscapeDataString(user.Email!)}&token={Uri.EscapeDataString(tokenEnc)}";
+            var fullLink = $"{baseResetUrl}?email={Uri.EscapeDataString(user.Email!)}&token={Uri.EscapeDataString(tokenEnc)}";
 
-            // اسم العرض
             var displayName = !string.IsNullOrWhiteSpace(user.Name)
                 ? user.Name
                 : (user.UserName ?? user.Email!.Split('@')[0]);
 
-            var requestLocal = DateTime.UtcNow.ToLocalTime();
-
-            // موضوع الرسالة
-            var subject = $"إعادة تعيين كلمة المرور - {displayName}";
-
-            // توكنات القالب
-            var tokens = new Dictionary<string, string>
+            return new Dictionary<string, string>
             {
-                ["DisplayName"] = System.Net.WebUtility.HtmlEncode(displayName),
-                ["Email"] = System.Net.WebUtility.HtmlEncode(user.Email!),
-                ["RequestTime"] = requestLocal.ToString("yyyy/MM/dd HH:mm"),
+                ["DisplayName"] = displayName,
+                ["Email"] = user.Email ?? "",
+                ["RequestTime"] = DateTime.UtcNow.ToLocalTime().ToString("yyyy/MM/dd HH:mm"),
                 ["ResetLink"] = fullLink
             };
-
-            // 🔹 قراءة القالب وحقن القيم
-            var body = await _template.RenderAsync("ResetPassword.html", tokens);
-
-            // إرسال الرسالة
-            await _emailSender.SendAsync(user.Email!, subject, body);
-            return true;
-        }
-
-        public async Task<IdentityResult> ResetPasswordAsync(string email, string tokenEnc, string newPassword)
-        {
-            var user = await _userManager.FindByEmailAsync(email);
-            if (user == null)
-                return IdentityResult.Failed(new IdentityError { Description = "المستخدم غير موجود." });
-
-            var decoded = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(tokenEnc));
-            return await _userManager.ResetPasswordAsync(user, decoded, newPassword);
         }
     }
 }

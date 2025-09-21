@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+
 namespace Ejada_Portal.Models
 {
 
@@ -6,6 +7,7 @@ namespace Ejada_Portal.Models
     {
         [Required]
         public string? Email { get; set; }
+
         [Required]
         public string? Token { get; set; }
 
@@ -15,5 +17,7 @@ namespace Ejada_Portal.Models
         [Required, DataType(DataType.Password)]
         [Compare("Password", ErrorMessage = "كلمتا المرور غير متطابقتين.")]
         public string? ConfirmPassword { get; set; }
+
+        public string? SelectedProvider { get; set; } = "Gmail";
     }
 }

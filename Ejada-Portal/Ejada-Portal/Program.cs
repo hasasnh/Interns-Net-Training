@@ -1,8 +1,13 @@
-using Application.ServiceManager;
+﻿using Application.ServiceManager;
+using Application.Services;
+using Application.Services.IServices;
 using Domain.Entities;
 using Infrastructure.Data;
 using Infrastructure.Repository;
 using Infrastructure.Repository.IRepository;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,28 +16,75 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-builder.Services.AddIdentity<User, IdentityRole>()
+        options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddIdentityCore<User>()
+    .AddSignInManager()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped<IServiceManager, ServiceManager>();
-
+// Options for Gmail
 builder.Services.Configure<SmtpOptions>(builder.Configuration.GetSection("Smtp"));
-builder.Services.AddScoped<IEmailSender, SmtpEmailSender>();
+
+builder.Services.AddScoped<GmailEmailProvider>();
+builder.Services.AddScoped<RnwoodEmailProvider>();
+
+// ??? ??? Resolver
+builder.Services.AddScoped<IEmailProviderResolver, EmailProviderResolver>();
+
+// Template renderer
 builder.Services.AddScoped<IEmailTemplateRenderer, FileEmailTemplateRenderer>();
 
+// Infra & Services
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IServiceManager, ServiceManager>();
+//// Configure application cookie for Identity:
 
-builder.Services.ConfigureApplicationCookie(options =>
-{
-    options.LoginPath = "/User/Login";
-});
-
-builder.Services.AddAuthorization();
+builder.Services.AddAuthentication
+    (options =>
+    {
+        options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = "oidc";
+    })
+              .AddCookie(options =>
+              {
+                  options.Cookie.HttpOnly = true;
+                  options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+                  options.LoginPath = "/User/Login";
+                  options.AccessDeniedPath = "/User/AccessDenied";
+                  options.SlidingExpiration = true;
+              }).AddOpenIdConnect("oidc", options =>
+              {
+                  //The Authority indicates where the trusted token service is located
+                  options.Authority = builder.Configuration["ServiceUrls:IdentityAPI"];
+                  options.GetClaimsFromUserInfoEndpoint = true;
+                  options.ClientId = "magic";
+                  options.ClientSecret = "secret";
+                  options.ResponseType = "code";
+                  options.TokenValidationParameters.NameClaimType = "name";
+                  options.TokenValidationParameters.RoleClaimType = "role";
+                  options.Scope.Add("magic");
+                  options.SaveTokens = true;
+                  options.ClaimActions.MapJsonKey("role", "role");
+                  options.Events = new OpenIdConnectEvents
+                  {
+                      OnRemoteFailure = context =>
+                      {
+                          context.Response.Redirect("/");
+                          context.HandleResponse();
+                          return Task.FromResult(0);
+                      }
+                  };
+              });
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var resolver = scope.ServiceProvider.GetRequiredService<IEmailProviderResolver>();
+    Console.WriteLine("[DEBUG] Resolver Gmail => " + resolver.Get("Gmail").Name);
+    Console.WriteLine("[DEBUG] Resolver Rnwood => " + resolver.Get("Rnwood").Name);
+}
 
 if (!app.Environment.IsDevelopment())
 {

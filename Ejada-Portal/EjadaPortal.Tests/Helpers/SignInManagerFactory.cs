@@ -26,7 +26,7 @@ namespace EjadaPortal.Tests.Helpers
                 options,
                 logger.Object,
                 schemes.Object,
-                confirmation.Object 
+                confirmation.Object
             );
         }
     }
