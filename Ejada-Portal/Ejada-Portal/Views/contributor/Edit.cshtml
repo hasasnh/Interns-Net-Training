@@ -1,0 +1,286 @@
+@model Application.DTOs.ContributorDTO
+
+@{
+    ViewData["Title"] = "Edit Contributor";
+}
+
+<!--begin::Content-->
+<div id="kt_app_content" class="app-content flex-column-fluid">
+    <!--begin::Content container-->
+    <div id="kt_app_content_container" class="app-container container-xxl">
+        <!--begin::Card-->
+        <div class="card">
+            <!--begin::Card header-->
+            <div class="card-header border-0 pt-6">
+                <!--begin::Card title-->
+                <div class="card-title">
+                    <div class="d-flex align-items-center position-relative my-1">
+                        <h3 class="fs-2hx text-dark mb-5">Edit Contributor</h3>
+                    </div>
+                </div>
+                <!--end::Card title-->
+                <!--begin::Card toolbar-->
+                <div class="card-toolbar">
+                    <!--begin::Toolbar-->
+                    <div class="d-flex justify-content-end">
+                        <!--begin::Back button-->
+                        <a asp-action="Index" class="btn btn-light me-3">
+                            <i class="ki-duotone ki-arrow-left fs-2"></i>
+                            Back to Contributors
+                        </a>
+                        <!--end::Back button-->
+                    </div>
+                    <!--end::Toolbar-->
+                </div>
+                <!--end::Card toolbar-->
+            </div>
+            <!--end::Card header-->
+            <!--begin::Card body-->
+            <div class="card-body pt-0">
+                <!--begin::Form-->
+                <form asp-action="Edit" method="post" enctype="multipart/form-data" class="form" id="kt_modal_edit_contributor_form">
+                    <input asp-for="Id" type="hidden" />
+                    <div class="row">
+                        <!--begin::Input group-->
+                        <div class="col-md-6 mb-5">
+                            <label asp-for="Name" class="form-label required">Full Name</label>
+                            <input asp-for="Name" class="form-control form-control-solid" placeholder="Enter full name" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+                        <!--end::Input group-->
+                        <!--begin::Input group-->
+                        <div class="col-md-6 mb-5">
+                            <label asp-for="Role" class="form-label">Role/Position</label>
+                            <input asp-for="Role" class="form-control form-control-solid" placeholder="Enter role or position" />
+                            <span asp-validation-for="Role" class="text-danger"></span>
+                        </div>
+                        <!--end::Input group-->
+                    </div>
+
+                    <div class="row">
+                        <!--begin::Input group-->
+                        <div class="col-md-6 mb-5">
+                            <label asp-for="Email" class="form-label">Email Address</label>
+                            <input asp-for="Email" type="email" class="form-control form-control-solid" placeholder="Enter email address" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+                        <!--end::Input group-->
+                        <!--begin::Input group-->
+                        <div class="col-md-6 mb-5">
+                            <label class="form-label">Photo Upload</label>
+                            <div class="image-input image-input-outline" data-kt-image-input="true" style="background-image: url('@(string.IsNullOrEmpty(Model.Photo) ? "assets/media/avatars/blank.png" : Model.Photo)')">
+                                <!--begin::Preview existing logo-->
+                                <div class="image-input-wrapper w-125px h-125px" style="background-image: url('@(string.IsNullOrEmpty(Model.Photo) ? "assets/media/avatars/blank.png" : Model.Photo)')"></div>
+                                <!--end::Preview existing logo-->
+                                <!--begin::Label-->
+                                <label class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow" data-kt-image-input-action="change" data-bs-toggle="tooltip" title="Change avatar">
+                                    <i class="ki-duotone ki-pencil fs-7">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                    </i>
+                                    <!--begin::Inputs-->
+                                    <input type="file" name="photoFile" accept=".png, .jpg, .jpeg" />
+                                    <input type="hidden" name="avatar_remove" />
+                                    <!--end::Inputs-->
+                                </label>
+                                <!--end::Label-->
+                                <!--begin::Cancel-->
+                                <span class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow" data-kt-image-input-action="cancel" data-bs-toggle="tooltip" title="Cancel avatar">
+                                    <i class="ki-duotone ki-cross fs-2">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                    </i>
+                                </span>
+                                <!--end::Cancel-->
+                                <!--begin::Remove-->
+                                <span class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow" data-kt-image-input-action="remove" data-bs-toggle="tooltip" title="Remove avatar">
+                                    <i class="ki-duotone ki-cross fs-2">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                    </i>
+                                </span>
+                                <!--end::Remove-->
+                            </div>
+                            <!--begin::Hint-->
+                            <div class="form-text">Allowed file types: png, jpg, jpeg.</div>
+                            <!--end::Hint-->
+                            @if (!string.IsNullOrEmpty(Model.Photo))
+                            {
+                                <input asp-for="Photo" type="hidden" />
+                            }
+                        </div>
+                        <!--end::Input group-->
+                    </div>
+
+                    <!--begin::Input group-->
+                    <div class="mb-5">
+                        <label asp-for="Description" class="form-label required">Short Description</label>
+                        <textarea asp-for="Description" class="form-control form-control-solid" rows="3" placeholder="Enter a brief description"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                    <!--end::Input group-->
+
+                    <!--begin::Input group-->
+                    <div class="mb-5">
+                        <label asp-for="FullDescription" class="form-label">Full Description</label>
+                        <textarea asp-for="FullDescription" class="form-control form-control-solid" rows="5" placeholder="Enter detailed description"></textarea>
+                        <span asp-validation-for="FullDescription" class="text-danger"></span>
+                    </div>
+                    <!--end::Input group-->
+
+                    <div class="row">
+                        <!--begin::Input group-->
+                        <div class="col-md-4 mb-5">
+                            <label asp-for="LinkedInUrl" class="form-label">LinkedIn URL</label>
+                            <input asp-for="LinkedInUrl" class="form-control form-control-solid" placeholder="Enter LinkedIn profile URL" />
+                            <span asp-validation-for="LinkedInUrl" class="text-danger"></span>
+                        </div>
+                        <!--end::Input group-->
+                        <!--begin::Input group-->
+                        <div class="col-md-4 mb-5">
+                            <label asp-for="GitHubUrl" class="form-label">GitHub URL</label>
+                            <input asp-for="GitHubUrl" class="form-control form-control-solid" placeholder="Enter GitHub profile URL" />
+                            <span asp-validation-for="GitHubUrl" class="text-danger"></span>
+                        </div>
+                        <!--end::Input group-->
+                        <!--begin::Input group-->
+                        <div class="col-md-4 mb-5">
+                            <label asp-for="TwitterUrl" class="form-label">Twitter URL</label>
+                            <input asp-for="TwitterUrl" class="form-control form-control-solid" placeholder="Enter Twitter profile URL" />
+                            <span asp-validation-for="TwitterUrl" class="text-danger"></span>
+                        </div>
+                        <!--end::Input group-->
+                    </div>
+
+                    <!--begin::Actions-->
+                    <div class="text-center">
+                        <button type="reset" class="btn btn-light me-3" id="kt_modal_edit_contributor_cancel">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="kt_modal_edit_contributor_submit">
+                            <span class="indicator-label">Update Contributor</span>
+                            <span class="indicator-progress">Please wait...
+                                <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                        </button>
+                    </div>
+                    <!--end::Actions-->
+                </form>
+                <!--end::Form-->
+            </div>
+            <!--end::Card body-->
+        </div>
+        <!--end::Card-->
+    </div>
+    <!--end::Content container-->
+</div>
+<!--end::Content-->
+
+@section Scripts {
+    <script>
+        "use strict";
+
+        // Class definition
+        var KTContributorsEdit = function () {
+            // Define shared variables
+            var form;
+            var submitButton;
+            var validator;
+            var imageInput;
+
+            // Private functions
+            var initImageInput = function () {
+                // Init image input
+                imageInput = new KTImageInput('div[data-kt-image-input="true"]');
+            }
+
+            var initValidation = function () {
+                // Init form validation rules. For more info check the FormValidation plugin's official documentation:https://formvalidation.io/
+                validator = FormValidation.formValidation(
+                    form,
+                    {
+                        fields: {
+                            'Name': {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'Name is required'
+                                    }
+                                }
+                            },
+                            'Description': {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'Description is required'
+                                    }
+                                }
+                            },
+                            'Email': {
+                                validators: {
+                                    emailAddress: {
+                                        message: 'The value is not a valid email address'
+                                    }
+                                }
+                            }
+                        },
+                        plugins: {
+                            trigger: new FormValidation.plugins.Trigger(),
+                            bootstrap: new FormValidation.plugins.Bootstrap5({
+                                rowSelector: '.fv-row',
+                                eleInvalidClass: '',
+                                eleValidClass: ''
+                            })
+                        }
+                    }
+                );
+            }
+
+            var handleForm = function () {
+                submitButton.addEventListener('click', function (e) {
+                    // Prevent default button action
+                    e.preventDefault();
+
+                    // Validate form before submit
+                    if (validator) {
+                        validator.validate().then(function (status) {
+                            if (status == 'Valid') {
+                                // Show loading indication
+                                submitButton.setAttribute('data-kt-indicator', 'on');
+
+                                // Disable button to avoid multiple click
+                                submitButton.disabled = true;
+
+                                // Submit form
+                                form.submit();
+                            } else {
+                                // Show popup warning. For more info check the plugin's official documentation: alert()
+                                Swal.fire({
+                                    text: "Sorry, looks like there are some errors detected, please try again.",
+                                    icon: "error",
+                                    buttonsStyling: false,
+                                    confirmButtonText: "Ok, got it!",
+                                    customClass: {
+                                        confirmButton: "btn fw-bold btn-primary",
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+
+            // Public methods
+            return {
+                init: function () {
+                    form = document.querySelector('#kt_modal_edit_contributor_form');
+                    submitButton = document.querySelector('#kt_modal_edit_contributor_submit');
+
+                    initImageInput();
+                    initValidation();
+                    handleForm();
+                }
+            };
+        }();
+
+        // On document ready
+        KTUtil.onDOMContentLoaded(function () {
+            KTContributorsEdit.init();
+        });
+    </script>
+}

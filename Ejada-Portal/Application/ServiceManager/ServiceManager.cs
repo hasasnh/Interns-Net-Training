@@ -1,4 +1,4 @@
-﻿using Application.Services;
+using Application.Services;
 using Application.Services.IServices;
 using Domain.Entities;
 using Infrastructure.Data;
@@ -10,14 +10,18 @@ namespace Application.ServiceManager
     public class ServiceManager : IServiceManager
     {
         private readonly Lazy<IUserService> _userService;
+        private readonly Lazy<IContributorService> _contributorService;
+
         public ServiceManager(IUnitOfWork unitOfWork,
             UserManager<User> userManager,
             SignInManager<User> signInManager,
             ApplicationDbContext db)
         {
             _userService = new Lazy<IUserService>(() => new UserService(unitOfWork, userManager, signInManager));
+            _contributorService = new Lazy<IContributorService>(() => new ContributorService(unitOfWork));
         }
-        public IUserService UserService => _userService.Value;
 
+        public IUserService UserService => _userService.Value;
+        public IContributorService ContributorService => _contributorService.Value;
     }
 }
