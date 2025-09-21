@@ -4,8 +4,8 @@
 		<div class="app-sidebar-logo px-6 bg-dark text-light d-flex justify-content-center align-items-center" id="kt_app_sidebar_logo">
 			<!--begin::Logo image-->
 			<a href="../../demo1/dist/index.html" class="d-flex justify-content-center align-items-center w-100">
-				<img alt="Logo" src="assets/media/logos/ejada-logo-en.png" class="h-50px app-sidebar-logo-default">
-				<img alt="Logo" src="assets/media/logos/ejada-logo-sm.png" class="h-40px app-sidebar-logo-minimize">
+				<img alt="Logo" src="~/assets/media/logos/ejada-logo-en.png" class="h-50px app-sidebar-logo-default">
+				<img alt="Logo" src="~/assets/media/logos/ejada-logo-sm.png" class="h-40px app-sidebar-logo-minimize">
 			</a>
 			<!--end::Logo image-->
 			<!--begin::Sidebar toggle-->
@@ -191,7 +191,12 @@
 						</a>
 					</div>
 
-
+					<div class="menu-item">
+						<a class="menu-link" asp-action="SelectProvider" asp-controller="User">
+							<span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+							<span class="menu-title">Email provider Setting</span>
+						</a>
+					</div>
 
 					<!--end::Menu-->
 				</div>

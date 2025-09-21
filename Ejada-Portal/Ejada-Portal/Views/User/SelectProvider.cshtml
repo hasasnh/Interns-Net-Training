@@ -1,0 +1,20 @@
+﻿@model SelectProviderViewModel
+@{
+    ViewData["Title"] = "Select Email Provider";
+    Layout = "_Layout";
+}
+
+<div class="container mt-5">
+    <div class="card shadow-sm p-4 mx-auto" style="max-width:500px;">
+        <h3 class="text-center mb-4">Select Email Provider</h3>
+
+        <form asp-action="SelectProvider" method="post" class="d-flex flex-column gap-3">
+            @Html.AntiForgeryToken()
+
+            <label for="SelectedProvider" class="form-label">Choose Provider:</label>
+            <select asp-for="SelectedProvider" asp-items="@(new SelectList(Model.AvailableProviders))" class="form-select"></select>
+
+            <button type="submit" class="btn btn-primary mt-3">Continue</button>
+        </form>
+    </div>
+</div>
