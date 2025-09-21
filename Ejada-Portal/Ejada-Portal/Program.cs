@@ -23,10 +23,13 @@ builder.Services
 // Options for Gmail
 builder.Services.Configure<SmtpOptions>(builder.Configuration.GetSection("Smtp"));
 
-builder.Services.AddScoped<GmailEmailProvider>();
-builder.Services.AddScoped<RnwoodEmailProvider>();
+// Option for Hotmail
+builder.Services.Configure<HotmailOptions>(builder.Configuration.GetSection("Smtp"));
 
-// ??? ??? Resolver
+builder.Services.AddScoped<IEmailProvider, GmailEmailProvider>();
+builder.Services.AddScoped<IEmailProvider, RnwoodEmailProvider>();
+builder.Services.AddScoped<IEmailProvider, HotmailEmailProvider>();
+//Resolver
 builder.Services.AddScoped<IEmailProviderResolver, EmailProviderResolver>();
 
 // Template renderer

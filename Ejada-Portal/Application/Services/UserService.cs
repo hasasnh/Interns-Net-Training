@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using Application.DTOs;
+﻿using Application.DTOs;
 using Application.ServiceManager;
 using Application.Services.IServices;
 using Domain.Entities;
 using Infrastructure.Repository.IRepository;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
+using System.Runtime.Intrinsics.Arm;
+using System.Security.Claims;
+using System.Text;
 
 namespace Application.Services
 {
@@ -78,26 +77,30 @@ namespace Application.Services
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null) return false;
 
+            // If the user has a saved provider and we do not choose other
+            if (string.IsNullOrWhiteSpace(providerName))
+            {
+                providerName = string.IsNullOrWhiteSpace(user.PreferredEmailProvider) ? "Gmail" : user.PreferredEmailProvider;
+            }
+
             var tokens = await BuildEmailTokens(user, baseResetUrl);
             var body = await _template.RenderAsync("ResetPassword.html", tokens);
-            var subject = $"Reset Password - {tokens["DisplayName"]}";
 
-            IEmailProvider provider;
-            try
-            {
-                provider = _resolver.Get(string.IsNullOrWhiteSpace(providerName) ? "Gmail" : providerName);
-            }
-            catch
-            {
-                provider = _resolver.Get("Gmail");
-            }
+            var provider = _resolver.Get(providerName);
+            await provider.SendAsync(user.Email!, $"Reset Password - {tokens["DisplayName"]}", body);
 
-            await provider.SendAsync(user.Email!, subject, body);
             return true;
         }
 
+        // Save the user's preferred provider in DB
+        public async Task SetPreferredProviderAsync(User user, string providerName)
+        {
+            user.PreferredEmailProvider = providerName;
+            await _userManager.UpdateAsync(user);
+        }
+
         // If a provider name is not provided, it defaults to Gmail  
-       public async Task<IdentityResult> ResetPasswordAsync(string email, string tokenEnc, string newPassword)
+        public async Task<IdentityResult> ResetPasswordAsync(string email, string tokenEnc, string newPassword)
         {
             return await ResetPasswordAsync(email, tokenEnc, newPassword, "Gmail");
         }
@@ -115,8 +118,17 @@ namespace Application.Services
 
             return result;
         }
+        // Fetch the current user
+        public async Task<User?> GetCurrentUserAsync(ClaimsPrincipal principal)
+        {
+            return await _userManager.GetUserAsync(principal);
+        }
+        //Update any changes on user data
+        public async Task UpdateUserAsync(User user)
+        {
+            await _userManager.UpdateAsync(user);
+        }
 
-   
         private async Task<Dictionary<string, string>> BuildEmailTokens(User user, string baseResetUrl)
         {
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);

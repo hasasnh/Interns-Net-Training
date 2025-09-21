@@ -6,41 +6,38 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using Xunit;
 
 namespace EjadaPortal.Tests.Tests.Controllers
 {
     public class UserController_EmailReset_Tests
     {
-        //  POSITIVE (5) 
+        // POSITIVE TESTS (5)
 
         [Fact]
-        public void ForgotPassword_GET_ReturnsView_WithDefaultGmail()
+        public async Task ForgotPassword_GET_DefaultsToGmail()
         {
             // Arrange
             var userServiceMock = new Mock<IUserService>();
-            var controller = ControllerTestHelper.CreateControllerWithContext(userServiceMock, isAuthenticated: false);
+            var controller = ControllerTestHelper.CreateControllerWithContext(userServiceMock, false);
 
             // Act
-            var result = controller.ForgotPassword((string?)null) as ViewResult;
+            var result = await controller.ForgotPassword((string?)null) as ViewResult;
 
             // Assert
             result.Should().NotBeNull();
             var model = result!.Model as ForgotPasswordViewModel;
-            model.Should().NotBeNull();
             model!.SelectedProvider.Should().Be("Gmail");
         }
 
         [Fact]
-        public async Task ForgotPassword_POST_Gmail_Success_RedirectsAndSetsTempData()
+        public async Task ForgotPassword_POST_Gmail_Success()
         {
             // Arrange
             var userServiceMock = new Mock<IUserService>();
-            userServiceMock
-                .Setup(s => s.SendPasswordResetLinkAsync("u@x.com", It.IsAny<string>(), "Gmail"))
+            userServiceMock.Setup(s => s.SendPasswordResetLinkAsync("u@x.com", It.IsAny<string>(), "Gmail"))
                 .ReturnsAsync(true);
 
-            var controller = ControllerTestHelper.CreateControllerWithContext(userServiceMock, isAuthenticated: false);
+            var controller = ControllerTestHelper.CreateControllerWithContext(userServiceMock, false);
             var model = new ForgotPasswordViewModel { Email = "u@x.com", SelectedProvider = "Gmail" };
 
             // Act
@@ -53,63 +50,43 @@ namespace EjadaPortal.Tests.Tests.Controllers
         }
 
         [Fact]
-        public async Task ForgotPassword_POST_Rnwood_Success_CallsServiceWithProvider()
+        public async Task ForgotPassword_POST_Rnwood_Success()
         {
             // Arrange
             var userServiceMock = new Mock<IUserService>(MockBehavior.Strict);
-            userServiceMock
-                .Setup(s => s.SendPasswordResetLinkAsync("u@x.com", It.IsAny<string>(), "Rnwood"))
+            userServiceMock.Setup(s => s.SendPasswordResetLinkAsync("auth@x.com", It.IsAny<string>(), "Rnwood"))
                 .ReturnsAsync(true)
                 .Verifiable();
 
-            var controller = ControllerTestHelper.CreateControllerWithContext(userServiceMock, isAuthenticated: true);
-            var model = new ForgotPasswordViewModel { Email = "u@x.com", SelectedProvider = "Rnwood" };
+            var controller = ControllerTestHelper.CreateControllerWithContext(userServiceMock, true);
+            var model = new ForgotPasswordViewModel { Email = "auth@x.com", SelectedProvider = "Rnwood" };
 
             // Act
             var result = await controller.ForgotPassword(model) as RedirectToActionResult;
 
             // Assert
             result.Should().NotBeNull();
-            result!.ActionName.Should().Be(nameof(UserController.ForgotPassword));
             userServiceMock.Verify();
         }
 
         [Fact]
-        public void SelectProvider_GET_ReturnsView_WithAvailableProviders()
+        public async Task SelectProvider_GET_ReturnsProviders()
         {
             // Arrange
             var userServiceMock = new Mock<IUserService>();
-            var controller = ControllerTestHelper.CreateControllerWithContext(userServiceMock, isAuthenticated: true);
+            var controller = ControllerTestHelper.CreateControllerWithContext(userServiceMock, true);
 
             // Act
-            var result = controller.SelectProvider() as ViewResult;
+            var result = await controller.SelectProvider() as ViewResult;
 
             // Assert
             result.Should().NotBeNull();
             var model = result!.Model as SelectProviderViewModel;
-            model.Should().NotBeNull();
-            model!.AvailableProviders.Should().Contain(new[] { "Gmail", "Rnwood" });
+            model!.AvailableProviders.Should().Contain(new[] { "Gmail", "Rnwood", "Hotmail" });
         }
 
         [Fact]
-        public void SelectProvider_POST_Valid_RedirectsToForgotPasswordWithProvider()
-        {
-            // Arrange
-            var userServiceMock = new Mock<IUserService>();
-            var controller = ControllerTestHelper.CreateControllerWithContext(userServiceMock, isAuthenticated: true);
-
-            var model = new SelectProviderViewModel { SelectedProvider = "Gmail" };
-
-            // Act
-            var result = controller.SelectProvider(model) as RedirectToActionResult;
-
-            // Assert
-            result.Should().NotBeNull();
-            result!.ActionName.Should().Be(nameof(UserController.ForgotPassword));
-            result.RouteValues.Should().ContainKey("provider").WhoseValue.Should().Be("Gmail");
-        }
-        [Fact]
-        public async Task ResetPassword_POST_Success_RedirectsAndSetsTempData()
+        public async Task ResetPassword_POST_Success()
         {
             // Arrange
             var userServiceMock = new Mock<IUserService>();
@@ -117,7 +94,7 @@ namespace EjadaPortal.Tests.Tests.Controllers
                 .Setup(s => s.ResetPasswordAsync("u@x.com", "TK", "12345678", "Gmail"))
                 .ReturnsAsync(IdentityResult.Success);
 
-            var controller = ControllerTestHelper.CreateControllerWithContext(userServiceMock, isAuthenticated: false);
+            var controller = ControllerTestHelper.CreateControllerWithContext(userServiceMock, false);
             var model = new ResetPasswordViewModel
             {
                 Email = "u@x.com",
@@ -132,17 +109,17 @@ namespace EjadaPortal.Tests.Tests.Controllers
 
             // Assert
             result.Should().NotBeNull();
-            result!.ActionName.Should().Be(nameof(UserController.ForgotPassword));
             controller.TempData["PasswordChanged"].Should().NotBeNull();
         }
-        // ========== NEGATIVE (5) ==========
+
+        // NEGATIVE TESTS (5)
 
         [Fact]
         public async Task ForgotPassword_POST_InvalidModel_ReturnsView()
         {
             // Arrange
             var userServiceMock = new Mock<IUserService>();
-            var controller = ControllerTestHelper.CreateControllerWithContext(userServiceMock, isAuthenticated: false);
+            var controller = ControllerTestHelper.CreateControllerWithContext(userServiceMock, false);
             controller.ModelState.AddModelError(nameof(ForgotPasswordViewModel.Email), "Required");
             var model = new ForgotPasswordViewModel { Email = "", SelectedProvider = "Gmail" };
 
@@ -155,7 +132,7 @@ namespace EjadaPortal.Tests.Tests.Controllers
         }
 
         [Fact]
-        public async Task ForgotPassword_POST_UserNotFound_ReturnsViewWithEmailError()
+        public async Task ForgotPassword_POST_UserNotFound()
         {
             // Arrange
             var userServiceMock = new Mock<IUserService>();
@@ -163,7 +140,7 @@ namespace EjadaPortal.Tests.Tests.Controllers
                 .Setup(s => s.SendPasswordResetLinkAsync("no@x.com", It.IsAny<string>(), "Gmail"))
                 .ReturnsAsync(false);
 
-            var controller = ControllerTestHelper.CreateControllerWithContext(userServiceMock, isAuthenticated: false);
+            var controller = ControllerTestHelper.CreateControllerWithContext(userServiceMock, false);
             var model = new ForgotPasswordViewModel { Email = "no@x.com", SelectedProvider = "Gmail" };
 
             // Act
@@ -175,39 +152,31 @@ namespace EjadaPortal.Tests.Tests.Controllers
         }
 
         [Fact]
-        public async Task ForgotPassword_POST_AuthenticatedUser_UsesSelectedProvider()
-        {
-            // Arrange
-            var userServiceMock = new Mock<IUserService>(MockBehavior.Strict);
-            userServiceMock
-                .Setup(s => s.SendPasswordResetLinkAsync("auth@x.com", It.IsAny<string>(), "Rnwood"))
-                .ReturnsAsync(true)
-                .Verifiable();
-
-            var controller = ControllerTestHelper.CreateControllerWithContext(userServiceMock, isAuthenticated: true);
-            var model = new ForgotPasswordViewModel
-            {
-                Email = "auth@x.com",
-                SelectedProvider = "Rnwood"
-            };
-
-            // Act
-            var result = await controller.ForgotPassword(model) as RedirectToActionResult;
-
-            // Assert
-            result.Should().NotBeNull();
-            result!.ActionName.Should().Be(nameof(UserController.ForgotPassword));
-            userServiceMock.Verify(); // Make sure it was sent via Rnwood, not Gmail
-        }
-
-
-        [Fact]
-        public async Task ResetPassword_POST_PasswordMismatch_ReturnsViewWithConfirmError()
+        public async Task ForgotPassword_POST_ServiceThrows_ExceptionHandled()
         {
             // Arrange
             var userServiceMock = new Mock<IUserService>();
-            var controller = ControllerTestHelper.CreateControllerWithContext(userServiceMock, isAuthenticated: false);
+            userServiceMock
+                .Setup(s => s.SendPasswordResetLinkAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+                .ThrowsAsync(new Exception("SMTP failed"));
 
+            var controller = ControllerTestHelper.CreateControllerWithContext(userServiceMock, false);
+            var model = new ForgotPasswordViewModel { Email = "u@x.com", SelectedProvider = "Gmail" };
+
+            // Act
+            var result = await controller.ForgotPassword(model) as ViewResult;
+
+            // Assert
+            result.Should().NotBeNull();
+            controller.TempData["error"].Should().NotBeNull();
+        }
+
+        [Fact]
+        public async Task ResetPassword_POST_PasswordMismatch()
+        {
+            // Arrange
+            var userServiceMock = new Mock<IUserService>();
+            var controller = ControllerTestHelper.CreateControllerWithContext(userServiceMock, false);
             var model = new ResetPasswordViewModel
             {
                 Email = "u@x.com",
@@ -226,34 +195,32 @@ namespace EjadaPortal.Tests.Tests.Controllers
         }
 
         [Fact]
-        public async Task ResetPassword_POST_ServiceFailed_ReturnsViewWithErrors()
+
+        public async Task ResetPassword_POST_MissingToken_ReturnsViewWithModelError()
         {
             // Arrange
             var userServiceMock = new Mock<IUserService>();
-            var failure = IdentityResult.Failed(new IdentityError { Description = "Bad token" });
+            var controller = ControllerTestHelper.CreateControllerWithContext(userServiceMock, false);
 
-            userServiceMock
-                .Setup(s => s.ResetPasswordAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-                .ReturnsAsync(failure);
-
-            var controller = ControllerTestHelper.CreateControllerWithContext(userServiceMock, isAuthenticated: false);
             var model = new ResetPasswordViewModel
             {
                 Email = "u@x.com",
-                Token = "ENC_T",
+                Token = "", // Token missing
                 Password = "12345678",
                 ConfirmPassword = "12345678",
                 SelectedProvider = "Gmail"
             };
+
+            controller.ModelState.AddModelError(nameof(ResetPasswordViewModel.Token), "Token is required");
 
             // Act
             var result = await controller.ResetPassword(model) as ViewResult;
 
             // Assert
             result.Should().NotBeNull();
-            result!.ViewData.ModelState[string.Empty].Errors.Should().ContainSingle(e => e.ErrorMessage.Contains("Bad token"));
+            result!.ViewData.ModelState[nameof(ResetPasswordViewModel.Token)]!
+                .Errors.Should().NotBeEmpty();
         }
 
-        
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Application.DTOs;
 using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Application.Services.IServices
@@ -20,5 +21,8 @@ namespace Application.Services.IServices
 
         Task<IdentityResult> ResetPasswordAsync(string email, string tokenEnc, string newPassword);
         Task<IdentityResult> ResetPasswordAsync(string email, string tokenEnc, string newPassword, string providerName);
+        Task SetPreferredProviderAsync(User user, string selectedProvider);
+        Task<User?> GetCurrentUserAsync(ClaimsPrincipal principal);
+        Task UpdateUserAsync(User user);
     }
 }

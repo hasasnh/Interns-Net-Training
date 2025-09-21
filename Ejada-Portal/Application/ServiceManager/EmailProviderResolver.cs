@@ -1,26 +1,31 @@
-﻿
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
 namespace Application.ServiceManager
 {
     public class EmailProviderResolver : IEmailProviderResolver
     {
-        private readonly GmailEmailProvider _gmail;
-        private readonly RnwoodEmailProvider _rnwood;
+        private readonly Dictionary<string, IEmailProvider> _providers;
 
-        public EmailProviderResolver(GmailEmailProvider gmail, RnwoodEmailProvider rnwood)
+        public EmailProviderResolver(IEnumerable<IEmailProvider> providers)
         {
-            _gmail = gmail ?? throw new ArgumentNullException(nameof(gmail));
-            _rnwood = rnwood ?? throw new ArgumentNullException(nameof(rnwood));
+            _providers = providers.ToDictionary(
+                p => p.Name,
+                StringComparer.OrdinalIgnoreCase
+            );
         }
 
         public IEmailProvider Get(string providerName)
         {
-            if (string.Equals(providerName, "Gmail", StringComparison.OrdinalIgnoreCase))
-                return _gmail;
+            if (string.IsNullOrWhiteSpace(providerName))
+                providerName = "Gmail"; // default
 
-            if (string.Equals(providerName, "Rnwood", StringComparison.OrdinalIgnoreCase))
-                return _rnwood;
+            if (_providers.TryGetValue(providerName, out var provider))
+                return provider;
 
-            return _gmail; // by Default choose Gmail
+            throw new KeyNotFoundException($"Provider '{providerName}' not found. Registered: {string.Join(", ", _providers.Keys)}");
         }
     }
+
 }

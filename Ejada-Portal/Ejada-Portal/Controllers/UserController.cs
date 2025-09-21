@@ -90,15 +90,21 @@ namespace Ejada_Portal.Controllers
 
         // ---------------- Forgot Password ----------------
         [HttpGet, AllowAnonymous]
-        public IActionResult ForgotPassword(string provider)
+        public async Task<IActionResult> ForgotPassword(string? provider)
         {
+            var user = User.Identity?.IsAuthenticated == true
+                ? await _serviceManager.UserService.GetCurrentUserAsync(User)
+                : null;
+
             var model = new ForgotPasswordViewModel
             {
-                SelectedProvider = string.IsNullOrEmpty(provider) ? "Gmail" : provider
+                SelectedProvider = provider
+                                  ?? user?.PreferredEmailProvider
+                                  ?? "Gmail"
             };
+
             return View(model);
         }
-
 
         [HttpPost, AllowAnonymous]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
@@ -148,21 +154,32 @@ namespace Ejada_Portal.Controllers
 
         [Authorize]
         [HttpGet]
-        public IActionResult SelectProvider()
+        public async Task<IActionResult> SelectProvider()
         {
+            var user = await _serviceManager.UserService.GetCurrentUserAsync(User);
+
             var model = new SelectProviderViewModel
             {
-                AvailableProviders = new List<string> { "Gmail", "Rnwood" }
+                AvailableProviders = new List<string> { "Gmail", "Rnwood", "Hotmail" },
+                SelectedProvider = user?.PreferredEmailProvider ?? "Gmail" //If the user has a provider saved in the DB , it displays it as the default
             };
+
             return View(model);
         }
 
         [Authorize]
         [HttpPost]
-        public IActionResult SelectProvider(SelectProviderViewModel model)
+        public async Task<IActionResult> SelectProvider(SelectProviderViewModel model)
         {
             if (!ModelState.IsValid)
                 return View(model);
+
+            var user = await _serviceManager.UserService.GetCurrentUserAsync(User);
+            if (user != null)
+            {
+                user.PreferredEmailProvider = model.SelectedProvider;
+                await _serviceManager.UserService.UpdateUserAsync(user);
+            }
 
             return RedirectToAction("ForgotPassword", "User", new { provider = model.SelectedProvider });
         }

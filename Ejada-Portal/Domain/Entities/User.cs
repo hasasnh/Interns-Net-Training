@@ -12,5 +12,7 @@ namespace Domain.Entities
         public string? Name { get; set; }
         public enStatus Status { get; set; }
         public DateTime? CreatedAt = DateTime.UtcNow;
+        public string PreferredEmailProvider { get; set; } = "Gmail"; // for email provider
+
     }
 }
