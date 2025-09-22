@@ -1,5 +1,6 @@
-﻿
-namespace Application.ServiceManager
+﻿using Application.Services.IServices;
+
+namespace Application.Services
 {
     public class EmailProviderResolver : IEmailProviderResolver
     {

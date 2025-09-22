@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Application.DTOs;
-using Application.ServiceManager;
 using Application.Services.IServices;
 using Domain.Entities;
 using Infrastructure.Repository.IRepository;
