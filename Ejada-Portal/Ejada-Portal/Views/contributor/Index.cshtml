@@ -1,0 +1,553 @@
+@model IEnumerable<Application.DTOs.ContributorDTO>
+
+@{
+    ViewData["Title"] = "Contributors";
+}
+
+<style>
+    :root {
+        --primary-color: #009ef7;
+        --light-primary: #f1faff;
+        --success-color: #50cd89;
+        --light-success: #e8fff3;
+        --gray-100: #f5f5f5;
+        --gray-200: #eeeeee;
+        --gray-300: #e0e0e0;
+        --gray-600: #757575;
+        --gray-800: #424242;
+        --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
+        --card-shadow-hover: 0 8px 25px rgba(0, 0, 0, 0.12);
+    }
+
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        padding: 20px;
+    }
+
+    .card {
+        border: none;
+        border-radius: 12px;
+        box-shadow: var(--card-shadow);
+        transition: all 0.3s ease;
+        overflow: hidden;
+        margin-bottom: 24px;
+        background: white;
+    }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--card-shadow-hover);
+            background: linear-gradient(to bottom, #ffffff, #f8fbff);
+        }
+
+    .card-header {
+        background: transparent;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        padding: 1.25rem 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .card-body {
+        padding: 1.5rem;
+    }
+
+    .symbol {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        overflow: hidden;
+    }
+
+    .symbol-50px {
+        width: 50px;
+        height: 50px;
+    }
+
+    .symbol-label {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+        font-weight: 600;
+    }
+
+    .badge {
+        padding: 0.5em 0.8em;
+        border-radius: 6px;
+        font-weight: 500;
+    }
+
+    .badge-light-success {
+        background-color: var(--light-success);
+        color: var(--success-color);
+    }
+
+    .btn-primary {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        border-radius: 8px;
+        padding: 0.6rem 1.2rem;
+        font-weight: 500;
+    }
+
+        .btn-primary:hover {
+            background-color: #0085d4;
+            border-color: #0085d4;
+        }
+
+    .search-box {
+        position: relative;
+    }
+
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-600);
+        }
+
+        .search-box input {
+            padding-left: 40px;
+            border-radius: 8px;
+            border: 1px solid var(--gray-300);
+            height: 46px;
+        }
+
+    .contributor-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+        gap: 24px;
+        margin-top: 20px;
+    }
+
+    .contributor-name {
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 4px;
+    }
+
+    .contributor-description {
+        color: var(--gray-600);
+        font-size: 0.9rem;
+    }
+
+    .contributor-info {
+        margin-top: 20px;
+    }
+
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 12px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+    }
+
+    .info-label {
+        font-weight: 500;
+        color: var(--gray-800);
+    }
+
+    .info-value {
+        color: var(--gray-600);
+    }
+
+    .dropdown-menu {
+        border-radius: 8px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        border: 1px solid var(--gray-200);
+    }
+
+    .dropdown-item {
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        margin: 0.2rem;
+        font-size: 0.9rem;
+    }
+
+        .dropdown-item:hover {
+            background-color: var(--gray-100);
+        }
+
+    .action-btn {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.85rem;
+        border-radius: 6px;
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid var(--gray-200);
+    }
+
+    .page-title {
+        font-weight: 600;
+        color: #2c3e50;
+        margin: 0;
+    }
+
+    .form-check-input:checked {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+
+    /* Animation for cards */
+    keyframes fadeIn {
+        from
+
+    {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    }
+
+    .contributor-card {
+        animation: fadeIn 0.5s ease-out;
+    }
+
+    /* Responsive adjustments */
+    media (max-width: 768px) {
+        .contributor-grid
+
+    {
+        grid-template-columns: 1fr;
+    }
+
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    }
+</style>
+<!--begin::Content-->
+<div id="kt_app_content" class="app-content flex-column-fluid">
+    <!--begin::Content container-->
+    <div id="kt_app_content_container" class="app-container container-xxl">
+        @Html.AntiForgeryToken()
+        
+        <!--begin::Card-->
+        <div class="card">
+            <!--begin::Card header-->
+            <div class="card-header border-0 pt-6">
+                <!--begin::Card title-->
+                <div class="card-title">
+                    <!--begin::Search-->
+                    <div class="d-flex align-items-center position-relative my-1">
+                        <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-5">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                        </i>
+                        <input type="text" data-kt-contributor-filter="search" class="form-control form-control-solid w-250px ps-13" placeholder="Search contributors" />
+                    </div>
+                    <!--end::Search-->
+                </div>
+                <!--end::Card title-->
+                <!--begin::Card toolbar-->
+                <div class="card-toolbar">
+                    <!--begin::Toolbar-->
+                    <div class="d-flex justify-content-end" data-kt-contributor-toolbar="base">
+                        <!--begin::Add contributor-->
+                        <a asp-action="Create" class="btn btn-primary">
+                            <i class="ki-duotone ki-plus fs-2"></i>
+                            Add Contributor
+                        </a>
+                        <!--end::Add contributor-->
+                    </div>
+                    <!--end::Toolbar-->
+                </div>
+                <!--end::Card toolbar-->
+            </div>
+            <!--end::Card header-->
+            
+            <!--begin::Card body-->
+            <div class="card-body pt-0">
+                <!--begin::Cards container-->
+                <div id="kt_contributors_container" class="row g-6 mb-6">
+                    @foreach (var contributor in Model)
+                    {
+                        <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12 contributor-card">
+                            <!--begin::Card-->
+                            <div class="card card-flush h-md-100">
+                                <!--begin::Card header-->
+                                <div class="card-header">
+                                    <!--begin::Checkbox-->
+                                    <div class="form-check form-check-sm form-check-custom form-check-solid">
+                                        <input class="form-check-input contributor-checkbox" type="checkbox" value="@contributor.Id" />
+                                    </div>
+                                    <!--end::Checkbox-->
+                                    <!--begin::Card toolbar-->
+                                    <div class="card-toolbar">
+                                        <a href="#" class="btn btn-light btn-active-light-primary btn-sm" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                                            Actions
+                                            <i class="ki-duotone ki-down fs-5 ms-1"></i>
+                                        </a>
+                                        <!--begin::Menu-->
+                                        <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4" data-kt-menu="true">
+                                            <!--begin::Menu item-->
+                                            <div class="menu-item px-3">
+                                                <a asp-action="Details" asp-route-id="@contributor.Id" class="menu-link px-3">View</a>
+                                            </div>
+                                            <!--end::Menu item-->
+                                            <!--begin::Menu item-->
+                                            <div class="menu-item px-3">
+                                                <a asp-action="Edit" asp-route-id="@contributor.Id" class="menu-link px-3">Edit</a>
+                                            </div>
+                                            <!--end::Menu item-->
+                                            <!--begin::Menu item-->
+                                            <div class="menu-item px-3">
+                                                <a href="#" class="menu-link px-3 text-danger" data-kt-contributor-filter="delete_row" data-contributor-id="@contributor.Id">Delete</a>
+                                            </div>
+                                            <!--end::Menu item-->
+                                        </div>
+                                        <!--end::Menu-->
+                                    </div>
+                                    <!--end::Card toolbar-->
+                                </div>
+                                <!--end::Card header-->
+                                
+                                <!--begin::Card body-->
+                                <div class="card-body d-flex flex-column justify-content-between mt-3">
+                                    <!--begin::Contributor details-->
+                                    <div class="d-flex align-items-center mb-5">
+                                        <!--begin::Avatar-->
+                                        <div class="symbol symbol-50px me-5">
+                                            @if (!string.IsNullOrEmpty(contributor.Photo))
+                                            {
+                                                <img src="@contributor.Photo" alt="@contributor.Name" class="symbol-label" />
+                                            }
+                                            else
+                                            {
+                                                <div class="symbol-label fs-3 bg-light-primary text-primary">@contributor.Name.Substring(0, 1).ToUpper()</div>
+                                            }
+                                        </div>
+                                        <!--end::Avatar-->
+                                        <!--begin::Name-->
+                                        <div class="d-flex justify-content-start flex-column">
+                                            <a href="#" class="text-gray-900 fw-bold text-hover-primary mb-1 fs-6">@contributor.Name</a>
+                                            <span class="text-muted fw-semibold text-muted d-block fs-7">@contributor.Description</span>
+                                        </div>
+                                        <!--end::Name-->
+                                    </div>
+                                    <!--end::Contributor details-->
+                                    
+                                    <!--begin::Contributor info-->
+                                    <div class="d-flex flex-column">
+                                        <!--begin::Role-->
+                                        <div class="d-flex align-items-center mb-2">
+                                            <span class="fw-bold me-2">Role:</span>
+                                            <span class="text-muted">@(contributor.Role ?? "N/A")</span>
+                                        </div>
+                                        <!--end::Role-->
+                                        
+                                        <!--begin::Email-->
+                                        <div class="d-flex align-items-center mb-2">
+                                            <span class="fw-bold me-2">Email:</span>
+                                            <span class="text-muted">@(contributor.Email ?? "N/A")</span>
+                                        </div>
+                                        <!--end::Email-->
+                                        
+                                        <!--begin::Status-->
+                                        <div class="d-flex align-items-center mb-2">
+                                            <span class="fw-bold me-2">Status:</span>
+                                            <span class="badge badge-light-success">Active</span>
+                                        </div>
+                                        <!--end::Status-->
+                                        
+                                        <!--begin::Created-->
+                                        <div class="d-flex align-items-center">
+                                            <span class="fw-bold me-2">Created:</span>
+                                            <span class="text-muted">@DateTime.Now.ToString("MMM dd, yyyy")</span>
+                                        </div>
+                                        <!--end::Created-->
+                                    </div>
+                                    <!--end::Contributor info-->
+                                </div>
+                                <!--end::Card body-->
+                            </div>
+                            <!--end::Card-->
+                        </div>
+                    }
+                </div>
+                <!--end::Cards container-->
+            </div>
+            <!--end::Card body-->
+        </div>
+        <!--end::Card-->
+    </div>
+    <!--end::Content container-->
+</div>
+<!--end::Content-->
+
+@section Scripts {
+    <script>
+        "use strict";
+
+        // Class definition
+        var KTContributorsList = function () {
+            // Define shared variables
+            var container = document.getElementById('kt_contributors_container');
+            var cards = container ? container.querySelectorAll('.contributor-card') : [];
+            var filterSearch;
+
+            // Private functions
+            var initContributorsCards = function () {
+                // No datatable initialization needed for cards
+            }
+
+            // Search Cards
+            var handleSearchCards = function () {
+                const filterSearch = document.querySelector('[data-kt-contributor-filter="search"]');
+                if (filterSearch) {
+                    filterSearch.addEventListener('keyup', function (e) {
+                        const searchValue = e.target.value.toLowerCase();
+                        
+                        cards.forEach(card => {
+                            const cardText = card.textContent.toLowerCase();
+                            if (cardText.indexOf(searchValue) > -1) {
+                                card.style.display = '';
+                            } else {
+                                card.style.display = 'none';
+                            }
+                        });
+                    });
+                }
+            }
+
+            // Delete contributor
+            var handleDeleteContributor = function () {
+                $(document).on('click', '[data-kt-contributor-filter="delete_row"]', function (e) {
+                    e.preventDefault();
+                    
+                    const contributorId = $(this).data('contributor-id');
+                    const cardElement = $(this).closest('.contributor-card');
+                    const contributorName = cardElement.find('.text-hover-primary').text();
+                    
+                    Swal.fire({
+                        text: "Are you sure you want to delete " + contributorName + "?",
+                        icon: "warning",
+                        showCancelButton: true,
+                        buttonsStyling: false,
+                        confirmButtonText: "Yes, delete!",
+                        cancelButtonText: "No, cancel",
+                        customClass: {
+                            confirmButton: "btn fw-bold btn-danger",
+                            cancelButton: "btn fw-bold btn-active-light-primary"
+                        }
+                    }).then(function (result) {
+                        if (result.value) {
+                            // Show loading
+                            Swal.fire({
+                                text: "Deleting contributor...",
+                                icon: "info",
+                                buttonsStyling: false,
+                                allowOutsideClick: false,
+                                showConfirmButton: false,
+                                customClass: {
+                                    confirmButton: "btn fw-bold btn-primary"
+                                }
+                            });
+
+                            // Delete via AJAX
+                            $.ajax({
+                                url: '@Url.Action("Delete", "Contributor")',
+                                type: 'POST',
+                                data: {
+                                    id: contributorId,
+                                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                                },
+                                success: function (response) {
+                                    if (response.success) {
+                                        Swal.fire({
+                                            text: "Contributor deleted successfully!",
+                                            icon: "success",
+                                            buttonsStyling: false,
+                                            confirmButtonText: "Ok, got it!",
+                                            customClass: {
+                                                confirmButton: "btn fw-bold btn-primary"
+                                            }
+                                        }).then(function () {
+                                            // Remove the card from view
+                                            cardElement.remove();
+                                        });
+                                    } else {
+                                        Swal.fire({
+                                            text: response.message || "Error deleting contributor",
+                                            icon: "error",
+                                            buttonsStyling: false,
+                                            confirmButtonText: "Ok, got it!",
+                                            customClass: {
+                                                confirmButton: "btn fw-bold btn-primary"
+                                            }
+                                        });
+                                    }
+                                },
+                                error: function () {
+                                    Swal.fire({
+                                        text: "Error deleting contributor",
+                                        icon: "error",
+                                        buttonsStyling: false,
+                                        confirmButtonText: "Ok, got it!",
+                                        customClass: {
+                                            confirmButton: "btn fw-bold btn-primary"
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    });
+                });
+            }
+
+            // Checkbox functionality
+            var handleCheckboxes = function () {
+                // Master checkbox
+                const masterCheckbox = document.querySelector('[data-kt-check="true"]');
+                if (masterCheckbox) {
+                    masterCheckbox.addEventListener('change', function() {
+                        const isChecked = this.checked;
+                        document.querySelectorAll('.contributor-checkbox').forEach(checkbox => {
+                            checkbox.checked = isChecked;
+                        });
+                    });
+                }
+            }
+
+            // Public methods
+            return {
+                init: function () {
+                    if (!container) {
+                        return;
+                    }
+
+                    initContributorsCards();
+                    handleSearchCards();
+                    handleDeleteContributor();
+                    handleCheckboxes();
+                }
+            };
+        }();
+
+        // On document ready
+        KTUtil.onDOMContentLoaded(function () {
+            KTContributorsList.init();
+        });
+    </script>
+}

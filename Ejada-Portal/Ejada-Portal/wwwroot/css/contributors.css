@@ -1,0 +1,161 @@
+/* Contributor Cards Styling */  
+.contributor-card {  
+    background: #fff;  
+    border-radius: 12px;  
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);  
+    transition: all 0.3s ease;  
+    overflow: hidden;  
+    height: 100%;  
+    display: flex;  
+    flex-direction: column;  
+}  
+  
+.contributor-card:hover {  
+    transform: translateY(-5px);  
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);  
+}  
+  
+.contributor-image {  
+    height: 200px;  
+    overflow: hidden;  
+    position: relative;  
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);  
+    display: flex;  
+    align-items: center;  
+    justify-content: center;  
+}  
+  
+.contributor-image img {  
+    width: 100%;  
+    height: 100%;  
+    object-fit: cover;  
+    transition: transform 0.3s ease;  
+}  
+  
+.contributor-card:hover .contributor-image img {  
+    transform: scale(1.05);  
+}  
+  
+.default-avatar {  
+    width: 80px;  
+    height: 80px;  
+    background: rgba(255, 255, 255, 0.2);  
+    border-radius: 50%;  
+    display: flex;  
+    align-items: center;  
+    justify-content: center;  
+    font-size: 2rem;  
+    color: white;  
+}  
+  
+.contributor-info {  
+    padding: 1.5rem;  
+    flex-grow: 1;  
+    display: flex;  
+    flex-direction: column;  
+}  
+  
+.contributor-name {  
+    font-size: 1.25rem;  
+    font-weight: 600;  
+    margin-bottom: 0.5rem;  
+    color: #2d3748;  
+}  
+  
+.contributor-role {  
+    color: #667eea;  
+    font-weight: 500;  
+    margin-bottom: 0.75rem;  
+    font-size: 0.9rem;  
+}  
+  
+.contributor-description {  
+    color: #718096;  
+    line-height: 1.5;  
+    margin-bottom: 1rem;  
+    flex-grow: 1;  
+}  
+  
+/* Details Page Styling */  
+.contributor-detail-image {  
+    text-align: center;  
+    margin-bottom: 2rem;  
+}  
+  
+.contributor-detail-image img {  
+    max-width: 100%;  
+    height: auto;  
+    border-radius: 12px;  
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);  
+}  
+  
+.default-avatar-large {  
+    width: 200px;  
+    height: 200px;  
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);  
+    border-radius: 12px;  
+    display: flex;  
+    align-items: center;  
+    justify-content: center;  
+    font-size: 4rem;  
+    color: white;  
+    margin: 0 auto;  
+}  
+  
+.contributor-detail-name {  
+    font-size: 2.5rem;  
+    font-weight: 700;  
+    color: #2d3748;  
+    margin-bottom: 0.5rem;  
+}  
+  
+.contributor-detail-role {  
+    font-size: 1.25rem;  
+    color: #667eea;  
+    font-weight: 500;  
+    margin-bottom: 1rem;  
+}  
+  
+.contributor-detail-description {  
+    font-size: 1.1rem;  
+    color: #4a5568;  
+    line-height: 1.6;  
+    margin-bottom: 1.5rem;  
+}  
+  
+.contributor-full-description {  
+    background: #f7fafc;  
+    padding: 1.5rem;  
+    border-radius: 8px;  
+    margin-bottom: 2rem;  
+}  
+  
+.contributor-full-description h5 {  
+    color: #2d3748;  
+    font-weight: 600;  
+    margin-bottom: 1rem;  
+}  
+  
+.contributor-social-links {  
+    margin-top: 1.5rem;  
+}  
+  
+.contributor-social-links .btn {  
+    margin-right: 0.5rem;  
+    margin-bottom: 0.5rem;  
+}  
+  
+/* Responsive Design */  
+@media (max-width: 768px) {  
+    .contributor-detail-name {  
+        font-size: 2rem;  
+    }  
+    .contributor-detail-image {  
+        margin-bottom: 1rem;  
+    }  
+    .default-avatar-large {  
+        width: 150px;  
+        height: 150px;  
+        font-size: 3rem;  
+    }  
+} 

@@ -1,0 +1,289 @@
+@model Application.DTOs.ContributorDTO
+
+@{
+    ViewData["Title"] = "Contributor Details";
+}
+
+<!--begin::Content-->
+<div id="kt_app_content" class="app-content flex-column-fluid">
+    <!--begin::Content container-->
+    <div id="kt_app_content_container" class="app-container container-xxl">
+        <!--begin::Card-->
+        <div class="card">
+            <!--begin::Card header-->
+            <div class="card-header border-0 pt-6">
+                <!--begin::Card title-->
+                <div class="card-title">
+                    <div class="d-flex align-items-center position-relative my-1">
+                        <h3 class="fs-2hx text-dark mb-5">Contributor Details</h3>
+                    </div>
+                </div>
+                <!--end::Card title-->
+                <!--begin::Card toolbar-->
+                <div class="card-toolbar">
+                    <!--begin::Toolbar-->
+                    <div class="d-flex justify-content-end">
+                        <!--begin::Back button-->
+                        <a asp-action="Index" class="btn btn-light me-3">
+                            <i class="ki-duotone ki-arrow-left fs-2"></i>
+                            Back to Contributors
+                        </a>
+                        <!--end::Back button-->
+                        <!--begin::Edit button-->
+                        <a href="#" class="btn btn-primary">
+                            <i class="ki-duotone ki-pencil fs-2"></i>
+                            Edit Contributor
+                        </a>
+                        <!--end::Edit button-->
+                    </div>
+                    <!--end::Toolbar-->
+                </div>
+                <!--end::Card toolbar-->
+            </div>
+            <!--end::Card header-->
+            <!--begin::Card body-->
+            <div class="card-body pt-0">
+                <!--begin::Profile-->
+                <div class="d-flex flex-column flex-lg-row">
+                    <!--begin::Aside-->
+                    <div class="flex-column flex-lg-row-auto w-lg-250px w-xl-350px mb-10">
+                        <!--begin::Card-->
+                        <div class="card mb-5 mb-xl-8">
+                            <!--begin::Card body-->
+                            <div class="card-body">
+                                <!--begin::Summary-->
+                                <div class="d-flex flex-center flex-column py-5">
+                                    <!--begin::Photo-->
+                                    <div class="symbol symbol-100px symbol-circle mb-7">
+                                        @if (!string.IsNullOrEmpty(Model.Photo))
+                                        {
+                                            <img src="@Model.Photo" alt="@Model.Name" class="symbol-label" />
+                                        }
+                                        else
+                                        {
+                                            <div class="symbol-label fs-2x fw-semibold text-primary bg-light-primary">@Model.Name.Substring(0, 1).ToUpper()</div>
+                                        }
+                                    </div>
+                                    <!--end::Photo-->
+                                    <!--begin::Name-->
+                                    <a href="#" class="fs-3 text-gray-800 text-hover-primary fw-bold mb-3">@Model.Name</a>
+                                    <!--end::Name-->
+                                    <!--begin::Position-->
+                                    <div class="mb-9">
+                                        <div class="badge badge-lg badge-light-primary d-inline">@(Model.Role ?? "Contributor")</div>
+                                    </div>
+                                    <!--end::Position-->
+                                </div>
+                                <!--end::Summary-->
+                                <!--begin::Info-->
+                                <div class="d-flex flex-wrap flex-center">
+                                    <!--begin::Stats-->
+                                    <div class="border border-gray-300 border-dashed rounded min-w-80px py-3 px-4 me-6 mb-3">
+                                        <div class="fs-6 fw-bold text-gray-700">Status</div>
+                                        <div class="fs-3 fw-bold text-success">Active</div>
+                                    </div>
+                                    <!--end::Stats-->
+                                </div>
+                                <!--end::Info-->
+                            </div>
+                            <!--end::Card body-->
+                        </div>
+                        <!--end::Card-->
+                    </div>
+                    <!--end::Aside-->
+                    <!--begin::Content-->
+                    <div class="flex-lg-row-fluid ms-lg-15">
+                        <!--begin::Tabs-->
+                        <ul class="nav nav-custom nav-tabs nav-line-tabs nav-line-tabs-2x border-0 fs-4 fw-bold mb-8">
+                            <!--begin::Nav item-->
+                            <li class="nav-item">
+                                <a class="nav-link text-active-primary pb-4 active" data-bs-toggle="tab" href="#kt_contributor_details_overview">Overview</a>
+                            </li>
+                            <!--end::Nav item-->
+                            <!--begin::Nav item-->
+                            <li class="nav-item">
+                                <a class="nav-link text-active-primary pb-4" data-bs-toggle="tab" href="#kt_contributor_details_social">Social Links</a>
+                            </li>
+                            <!--end::Nav item-->
+                        </ul>
+                        <!--end::Tabs-->
+                        <!--begin::Tab content-->
+                        <div class="tab-content" id="myTabContent">
+                            <!--begin::Tab pane-->
+                            <div class="tab-pane fade show active" id="kt_contributor_details_overview" role="tabpanel">
+                                <!--begin::Card-->
+                                <div class="card card-flush mb-6 mb-xl-9">
+                                    <!--begin::Card header-->
+                                    <div class="card-header mt-6">
+                                        <!--begin::Card title-->
+                                        <div class="card-title flex-column">
+                                            <h2 class="mb-1">Contributor Information</h2>
+                                            <div class="fs-6 fw-semibold text-muted">Personal details and information</div>
+                                        </div>
+                                        <!--end::Card title-->
+                                    </div>
+                                    <!--end::Card header-->
+                                    <!--begin::Card body-->
+                                    <div class="card-body p-9">
+                                        <!--begin::Row-->
+                                        <div class="row mb-7">
+                                            <!--begin::Label-->
+                                            <label class="col-lg-4 fw-semibold text-muted">Full Name</label>
+                                            <!--end::Label-->
+                                            <!--begin::Col-->
+                                            <div class="col-lg-8">
+                                                <span class="fw-bold fs-6 text-gray-800">@Model.Name</span>
+                                            </div>
+                                            <!--end::Col-->
+                                        </div>
+                                        <!--end::Row-->
+                                        <!--begin::Row-->
+                                        <div class="row mb-7">
+                                            <!--begin::Label-->
+                                            <label class="col-lg-4 fw-semibold text-muted">Role/Position</label>
+                                            <!--end::Label-->
+                                            <!--begin::Col-->
+                                            <div class="col-lg-8">
+                                                <span class="fw-bold fs-6 text-gray-800">@(Model.Role ?? "N/A")</span>
+                                            </div>
+                                            <!--end::Col-->
+                                        </div>
+                                        <!--end::Row-->
+                                        <!--begin::Row-->
+                                        <div class="row mb-7">
+                                            <!--begin::Label-->
+                                            <label class="col-lg-4 fw-semibold text-muted">Email Address</label>
+                                            <!--end::Label-->
+                                            <!--begin::Col-->
+                                            <div class="col-lg-8">
+                                                <span class="fw-bold fs-6 text-gray-800">@(Model.Email ?? "N/A")</span>
+                                            </div>
+                                            <!--end::Col-->
+                                        </div>
+                                        <!--end::Row-->
+                                        <!--begin::Row-->
+                                        <div class="row mb-7">
+                                            <!--begin::Label-->
+                                            <label class="col-lg-4 fw-semibold text-muted">Description</label>
+                                            <!--end::Label-->
+                                            <!--begin::Col-->
+                                            <div class="col-lg-8">
+                                                <span class="fw-bold fs-6 text-gray-800">@Model.Description</span>
+                                            </div>
+                                            <!--end::Col-->
+                                        </div>
+                                        <!--end::Row-->
+                                        @if (!string.IsNullOrEmpty(Model.FullDescription))
+                                        {
+                                            <!--begin::Row-->
+                                            <div class="row mb-7">
+                                                <!--begin::Label-->
+                                                <label class="col-lg-4 fw-semibold text-muted">Full Description</label>
+                                                <!--end::Label-->
+                                                <!--begin::Col-->
+                                                <div class="col-lg-8">
+                                                    <span class="fw-bold fs-6 text-gray-800">@Model.FullDescription</span>
+                                                </div>
+                                                <!--end::Col-->
+                                            </div>
+                                            <!--end::Row-->
+                                        }
+                                    </div>
+                                    <!--end::Card body-->
+                                </div>
+                                <!--end::Card-->
+                            </div>
+                            <!--end::Tab pane-->
+                            <!--begin::Tab pane-->
+                            <div class="tab-pane fade" id="kt_contributor_details_social" role="tabpanel">
+                                <!--begin::Card-->
+                                <div class="card card-flush mb-6 mb-xl-9">
+                                    <!--begin::Card header-->
+                                    <div class="card-header mt-6">
+                                        <!--begin::Card title-->
+                                        <div class="card-title flex-column">
+                                            <h2 class="mb-1">Social Links</h2>
+                                            <div class="fs-6 fw-semibold text-muted">Social media profiles and links</div>
+                                        </div>
+                                        <!--end::Card title-->
+                                    </div>
+                                    <!--end::Card header-->
+                                    <!--begin::Card body-->
+                                    <div class="card-body p-9">
+                                        <!--begin::Row-->
+                                        <div class="row mb-7">
+                                            <!--begin::Label-->
+                                            <label class="col-lg-4 fw-semibold text-muted">LinkedIn</label>
+                                            <!--end::Label-->
+                                            <!--begin::Col-->
+                                            <div class="col-lg-8">
+                                                @if (!string.IsNullOrEmpty(Model.LinkedInUrl))
+                                                {
+                                                    <a href="@Model.LinkedInUrl" target="_blank" class="fw-bold fs-6 text-primary">@Model.LinkedInUrl</a>
+                                                }
+                                                else
+                                                {
+                                                    <span class="fw-bold fs-6 text-muted">N/A</span>
+                                                }
+                                            </div>
+                                            <!--end::Col-->
+                                        </div>
+                                        <!--end::Row-->
+                                        <!--begin::Row-->
+                                        <div class="row mb-7">
+                                            <!--begin::Label-->
+                                            <label class="col-lg-4 fw-semibold text-muted">GitHub</label>
+                                            <!--end::Label-->
+                                            <!--begin::Col-->
+                                            <div class="col-lg-8">
+                                                @if (!string.IsNullOrEmpty(Model.GitHubUrl))
+                                                {
+                                                    <a href="@Model.GitHubUrl" target="_blank" class="fw-bold fs-6 text-primary">@Model.GitHubUrl</a>
+                                                }
+                                                else
+                                                {
+                                                    <span class="fw-bold fs-6 text-muted">N/A</span>
+                                                }
+                                            </div>
+                                            <!--end::Col-->
+                                        </div>
+                                        <!--end::Row-->
+                                        <!--begin::Row-->
+                                        <div class="row mb-7">
+                                            <!--begin::Label-->
+                                            <label class="col-lg-4 fw-semibold text-muted">Twitter</label>
+                                            <!--end::Label-->
+                                            <!--begin::Col-->
+                                            <div class="col-lg-8">
+                                                @if (!string.IsNullOrEmpty(Model.TwitterUrl))
+                                                {
+                                                    <a href="@Model.TwitterUrl" target="_blank" class="fw-bold fs-6 text-primary">@Model.TwitterUrl</a>
+                                                }
+                                                else
+                                                {
+                                                    <span class="fw-bold fs-6 text-muted">N/A</span>
+                                                }
+                                            </div>
+                                            <!--end::Col-->
+                                        </div>
+                                        <!--end::Row-->
+                                    </div>
+                                    <!--end::Card body-->
+                                </div>
+                                <!--end::Card-->
+                            </div>
+                            <!--end::Tab pane-->
+                        </div>
+                        <!--end::Tab content-->
+                    </div>
+                    <!--end::Content-->
+                </div>
+                <!--end::Profile-->
+            </div>
+            <!--end::Card body-->
+        </div>
+        <!--end::Card-->
+    </div>
+    <!--end::Content container-->
+</div>
+<!--end::Content-->
