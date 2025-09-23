@@ -1,7 +1,8 @@
-using System.Diagnostics;
+using Application.DTOs;
 using Ejada_Portal.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 
 namespace Ejada_Portal.Controllers
 {
@@ -30,5 +31,9 @@ namespace Ejada_Portal.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
+
+
+      
     }
 }

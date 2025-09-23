@@ -63,5 +63,16 @@ namespace Application.Services
         {
             await _signInManager.SignOutAsync();
         }
+
+
+        // add user to role
+        public async Task AssignUserToRoleAsync(string userId, string roleName)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user != null)
+            {
+                await _userManager.AddToRoleAsync(user, roleName);
+            }
+        }
     }
 }

@@ -1,0 +1,151 @@
+﻿
+<style>
+    td .pages-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 6px 12px;
+        margin-top: 4px;
+        text-align: left;
+    }
+
+    .pages-grid .form-check {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        margin: 0;
+    }
+
+    .pages-grid .form-check-label {
+        font-size: 14px;
+        white-space: nowrap;
+    }
+</style>
+
+<div class="container mt-4">
+    <h3>Assign Roles to Users</h3>
+
+    <input type="text" id="searchName" class="form-control mb-3" placeholder="Search by Name">
+
+    <table id="clientsTable" class="display table table-striped">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Pages</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <button id="saveRolesBtn" class="btn btn-primary mt-3">Save Roles</button>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+<script>
+        $(document).ready(function () {
+        var rolesList = [];
+        var pagesList = [];
+
+        // Get Roles
+        $.ajax({
+            url: '/AssignRoles/GetAllRoles',
+            method: 'GET',
+            async: false,
+            success: function(data) {
+                rolesList = data;
+            }
+        });
+
+        // Get Pages
+        $.ajax({
+            url: '/AssignRoles/GetAllPages',
+            method: 'GET',
+            async: false,
+            success: function(data) {
+                pagesList = data;
+            }
+        });
+
+        var table = $('#clientsTable').DataTable({
+            ajax: {
+                url: '/AssignRoles/GetUsers',
+                dataSrc: 'data'
+            },
+            columns: [
+                { data: 'name' },
+                { data: 'email' },
+                {
+                    data: 'role',
+                    render: function(data) {
+                        var select = '<select class="form-select role-select">';
+                        select += '<option value="">Select Role</option>';
+                        rolesList.forEach(function(role) {
+                            select += '<option value="' + role + '"' + (data === role ? ' selected' : '') + '>' + role + '</option>';
+                        });
+                        select += '</select>';
+                        return select;
+                    }
+                },
+                   {
+        data: 'permissions',
+        render: function(data) {
+            var checkboxes = '<div class="pages-grid">';
+            pagesList.forEach(function(page) {
+                var checked = (data && data.includes(page)) ? 'checked' : '';
+                checkboxes += `
+                    <div class="form-check">
+                        <input class="form-check-input page-checkbox" type="checkbox" value="${page}" ${checked}>
+                        <label class="form-check-label">${page}</label>
+                    </div>`;
+            });
+            checkboxes += '</div>';
+            return checkboxes;
+        }
+    }
+
+            ]
+        });
+
+        $('#searchName').on('keyup', function () {
+            table.column(0).search(this.value).draw();
+        });
+
+        $('#saveRolesBtn').click(function () {
+            var rolesData = [];
+
+            table.rows({ search: 'applied' }).every(function () {
+                var data = this.data();
+                var $row = $(this.node());
+                var role = $row.find('.role-select').val();
+                var pages = [];
+                $row.find('.page-checkbox:checked').each(function () {
+                    pages.push($(this).val());
+                });
+
+                rolesData.push({
+                    id: data.id,
+                    role: role,
+                    permissions: pages
+                });
+            });
+
+            $.ajax({
+                url: '/AssignRoles/SaveRoles',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(rolesData),
+                success: function() {
+                    alert('Roles and pages updated successfully!');
+                    table.ajax.reload();
+                },
+                error: function() {
+                    alert('Error updating roles and pages.');
+                }
+            });
+        });
+    });
+
+</script>
