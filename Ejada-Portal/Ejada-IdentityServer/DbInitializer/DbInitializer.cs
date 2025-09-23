@@ -49,6 +49,8 @@ namespace IdentityServer.DbInitializer
             }).Result;
 
 
+            ///Customer
+            ///
 
             User customerUser = new()
             {

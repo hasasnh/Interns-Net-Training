@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
@@ -18,6 +19,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
         options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddIdentityCore<User>()
+    .AddRoles<IdentityRole>() // <-- Add this line
     .AddSignInManager()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
@@ -36,7 +38,11 @@ builder.Services.AddScoped<IEmailTemplateRenderer, FileEmailTemplateRenderer>();
 
 // Infra & Services
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped<IUserService, UserService>();
+
+
+
+
+// ServiceManager
 builder.Services.AddScoped<IServiceManager, ServiceManager>();
 //// Configure application cookie for Identity:
 
