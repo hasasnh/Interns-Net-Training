@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using Moq;
 using Xunit;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Application.Services.IServices;
 
 namespace EjadaPortal.Tests.Tests.Services
 {
