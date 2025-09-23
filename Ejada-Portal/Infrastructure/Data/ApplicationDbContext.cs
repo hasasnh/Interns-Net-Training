@@ -12,6 +12,7 @@ namespace Infrastructure.Data
             {
                 base.OnModelCreating(modelBuilder);
             }
-        }
+            public DbSet<PagePermission> PagePermissions { get; set; }
+    }
     
 }

@@ -6,5 +6,7 @@ namespace Application.ServiceManager
     public interface IServiceManager
     {
         IUserService UserService { get; }
+        IAssignRolesService AssignRolesService { get; }
     }
+
 }
