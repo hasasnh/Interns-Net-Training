@@ -13,11 +13,8 @@ namespace Application.ServiceManager
         public Lazy<IUserService> _userService { get; private set; }
         public Lazy<IAssignRolesService> _assignRolesService { get; private set; }
         public Lazy<ISessionService> _sessionService { get; private set; }
-        private readonly Lazy<IUserService> _userService;
         private readonly Lazy<IContributorService> _contributorService;
        
-       public Lazy<IAssignRolesService> _assignRolesService { get; private set; }
-
         public ServiceManager(
             IUnitOfWork unitOfWork,
             UserManager<User> userManager,
