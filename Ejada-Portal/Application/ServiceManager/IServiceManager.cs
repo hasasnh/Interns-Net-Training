@@ -7,6 +7,7 @@ namespace Application.ServiceManager
     {
         IUserService UserService { get; }
         IAssignRolesService AssignRolesService { get; }
+        ISessionService SessionService { get; }
     }
 
 }

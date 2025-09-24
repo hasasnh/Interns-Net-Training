@@ -13,6 +13,8 @@ namespace Infrastructure.Data
                 base.OnModelCreating(modelBuilder);
             }
             public DbSet<PagePermission> PagePermissions { get; set; }
+            public DbSet<Session> Sessions { get; set; }
+
     }
-    
+
 }

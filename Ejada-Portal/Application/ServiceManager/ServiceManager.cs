@@ -12,7 +12,7 @@ namespace Application.ServiceManager
     {
         public Lazy<IUserService> _userService { get; private set; }
         public Lazy<IAssignRolesService> _assignRolesService { get; private set; }
-
+        public Lazy<ISessionService> _sessionService { get; private set; }
         public ServiceManager(
             IUnitOfWork unitOfWork,
             UserManager<User> userManager,
@@ -24,9 +24,11 @@ namespace Application.ServiceManager
         {
             _userService = new Lazy<IUserService>(() => new UserService(unitOfWork, userManager, signInManager, resolver, templateRenderer));
             _assignRolesService = new Lazy<IAssignRolesService>(() => new AssignRolesService(userManager, roleManager));
+            _sessionService = new Lazy<ISessionService>(() => new SessionService(unitOfWork));
         }
 
         public IUserService UserService => _userService.Value;
         public IAssignRolesService AssignRolesService => _assignRolesService.Value;
+        public ISessionService SessionService => _sessionService.Value;
     }
 }
