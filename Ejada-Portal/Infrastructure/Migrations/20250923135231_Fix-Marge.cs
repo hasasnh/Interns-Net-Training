@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class intailConnectIdentityServer : Migration
+    public partial class FixMarge : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
