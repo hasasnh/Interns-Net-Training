@@ -27,37 +27,37 @@
 	<!-- Mohammad Al-Khalaileh-->
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    <!-- Vendor Stylesheets -->
-    <link href="~/assets/plugins/custom/fullcalendar/fullcalendar.bundle.css" rel="stylesheet" type="text/css" />
-    <link href="~/assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
+	<!-- Vendor Stylesheets -->
+	<link href="~/assets/plugins/custom/fullcalendar/fullcalendar.bundle.css" rel="stylesheet" type="text/css" />
+	<link href="~/assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
 
-    <!-- Global Stylesheets -->
-    <link href="~/assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
-    <link href="~/assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
+	<!-- Global Stylesheets -->
+	<link href="~/assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
+	<link href="~/assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
-    @* @if (User.Identity.IsAuthenticated)
+	@* @if (User.Identity.IsAuthenticated)
     { *@
-		<!--Start: Header-->
-		@await Html.PartialAsync("_Header")
-		<!--end Header-->
-		<div class="d-flex flex-row flex-column-fluid">
-			<!--Start: Sidebar -->
-			@await Html.PartialAsync("_Sidebar")
-			<!--end: Sidebar -->
-			<!-- Main Wrapper -->
-			<div class="app-wrapper d-flex flex-column flex-row-fluid" id="kt_app_wrapper">
-				<div class="app-main flex-column flex-row-fluid">
-					<div class="d-flex flex-column flex-column-fluid">
-						<div class="app-content flex-column-fluid">
-							<div class="container">
-								@RenderBody()
-							</div>
+	<!--Start: Header-->
+	@await Html.PartialAsync("_Header")
+	<!--end Header-->
+	<div class="d-flex flex-row flex-column-fluid">
+		<!--Start: Sidebar -->
+		@await Html.PartialAsync("_Sidebar")
+		<!--end: Sidebar -->
+		<!-- Main Wrapper -->
+		<div class="app-wrapper d-flex flex-column flex-row-fluid" id="kt_app_wrapper">
+			<div class="app-main flex-column flex-row-fluid">
+				<div class="d-flex flex-column flex-column-fluid">
+					<div class="app-content flex-column-fluid">
+						<div class="container">
+							@RenderBody()
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
+	</div>
 
 	@* } *@
 
