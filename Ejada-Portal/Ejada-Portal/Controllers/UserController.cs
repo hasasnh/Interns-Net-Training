@@ -16,6 +16,9 @@ namespace Ejada_Portal.Controllers
         {
             _serviceManager = serviceManager;
         }
+
+    
+
         // ************** to route to IdentityServer registration page **************
 
         [HttpGet]
