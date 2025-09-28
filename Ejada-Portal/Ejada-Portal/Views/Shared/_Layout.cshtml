@@ -51,6 +51,8 @@
 					<div class="d-flex flex-column flex-column-fluid">
 						<div class="app-content flex-column-fluid">
 							<div class="container">
+							@await Html.PartialAsync("_Notification")
+
 								@RenderBody()
 							</div>
 						</div>

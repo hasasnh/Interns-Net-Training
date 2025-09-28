@@ -1,4 +1,5 @@
-﻿using System.Text;
+
+using System.Text;
 using Application.Services;
 using Application.ServiceManager;
 using Domain.Entities;
