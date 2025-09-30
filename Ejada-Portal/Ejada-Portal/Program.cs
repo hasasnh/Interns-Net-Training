@@ -41,9 +41,10 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddHttpClient("Jira", client =>
 {
-    var email = "mbadawieyad@gmail.com";
-    var apiToken = "ATATT3xFfGF0rRlU4w1myo-Z4L7t7vwKo20LAgOtfOPPEpsVlakZDU0hnNGQcqX1u8rFiOdkyAHfXatL0Ab-bxSWGorGZe3MoJfFymMg_T9ZwthXGldznYSwVxC29SkZIKsj51u1ph_K0H3gCnvFkch-HkIiPheGnPq4Ol0nFkugs_H3G1NhyMk=7BA7CDC1";
-    var baseUrl = "https://mbadawieyad.atlassian.net";
+    var jiraSection = builder.Configuration.GetSection("Jira");
+    var email = jiraSection["Email"];
+    var apiToken = jiraSection["ApiToken"];
+    var baseUrl = jiraSection["BaseUrl"];
 
     string auth = Convert.ToBase64String(
         System.Text.Encoding.ASCII.GetBytes($"{email}:{apiToken}")
