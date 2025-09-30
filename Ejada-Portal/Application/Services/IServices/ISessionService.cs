@@ -6,10 +6,17 @@ namespace Application.Services.IServices
 {
     public interface ISessionService
     {
-        SessionDto MapToDto(Domain.Entities.Session entity);
-        Domain.Entities.Session MapToEntity(SessionDto dto);
+        Task<IEnumerable<SessionDto>> GetAllSessionsAsync();
 
-        Task AddAsync(SessionDto dto);
-        Task<IEnumerable<SessionDto>> GetAllAsync();
+        Task<SessionDto> GetSessionByIdAsync(int id);
+
+        Task<SessionDto> CreateSessionAsync(SessionDto dto);
+
+        Task<SessionDto> UpdateSessionAsync(SessionDto dto);
+
+        Task<bool> DeleteSessionAsync(int id);
+
+
+
     }
 }

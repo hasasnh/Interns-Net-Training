@@ -1,15 +1,15 @@
-﻿using Application.DTOs;
+﻿// Web/Controllers/SessionsController.cs
+using Application.DTOs;
 using Application.ServiceManager;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
-namespace Ejada_Portal.Controllers
+namespace Ejada_Portal.Web.Controllers
 {
-    [Authorize] 
     public class SessionsController : Controller
     {
         private readonly IServiceManager _serviceManager;
+
         public SessionsController(IServiceManager serviceManager)
         {
             _serviceManager = serviceManager;
@@ -23,21 +23,15 @@ namespace Ejada_Portal.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Add(SessionDto model)
+        public async Task<IActionResult> Add(SessionDto dto)
         {
             if (!ModelState.IsValid)
-                return View(model);
+                return View(dto);
 
-            await _serviceManager.SessionService.AddAsync(model);
-            TempData["success"] = "Session added successfully.";
-            return RedirectToAction(nameof(RatingSession));
-        }
+            await _serviceManager.SessionService.CreateSessionAsync(dto);
 
-        [HttpGet]
-        public async Task<IActionResult> RatingSession()
-        {
-            var sessions = await _serviceManager.SessionService.GetAllAsync();
-            return View(sessions);
+            TempData["success"] = "Session created successfully!";
+            return RedirectToAction(nameof(Add)); // الآن تبقى على صفحة Add
         }
     }
 }

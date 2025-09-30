@@ -1,0 +1,163 @@
+﻿@model IEnumerable<Application.DTOs.SessionRatingSummaryDto>
+
+@{
+    ViewData["Title"] = "Session Ratings Summary";
+}
+
+<style>
+    :root {
+        --bg: #0b1020;
+        --card: #121933;
+        --muted: #7c8db5;
+        --text: #e9edff;
+        --border: rgba(255,255,255,.08);
+        --brand: #2d7dff;
+        --gold: #ffd700;
+        --silver: #bbb;
+    }
+
+    body {
+        background: var(--bg);
+        font-family: 'Segoe UI', sans-serif;
+        margin: 0;
+        padding: 0;
+    }
+
+    .wrap {
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 0 16px;
+    }
+
+    h2 {
+        color: var(--text);
+        margin-bottom: 32px;
+        font-weight: 700;
+        text-align: center;
+        font-size: 2rem;
+    }
+
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 24px;
+    }
+
+    .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 8px 25px rgba(0,0,0,.35);
+        padding: 24px;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 30px rgba(0,0,0,.45);
+        }
+
+        .card h3 {
+            margin: 0;
+            color: var(--text);
+            font-size: 1.3rem;
+        }
+
+        .card .sub {
+            color: var(--muted);
+            font-size: 0.9rem;
+            margin-top: 4px;
+        }
+
+    .stats {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 16px;
+    }
+
+        .stats div {
+            text-align: center;
+        }
+
+        .stats .number {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--brand);
+        }
+
+        .stats .label {
+            font-size: 0.85rem;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+    .stars {
+        display: flex;
+        justify-content: center;
+        gap: 4px;
+        margin-top: 12px;
+    }
+
+    .star svg {
+        width: 22px;
+        height: 22px;
+        fill: var(--silver);
+        transition: transform 0.2s, fill 0.2s;
+    }
+
+    .star.filled svg {
+        fill: var(--gold);
+        transform: scale(1.2);
+    }
+</style>
+
+<div class="wrap">
+    <h2>Session Ratings Summary</h2>
+    <div class="grid">
+        @foreach (var s in Model ?? Enumerable.Empty<Application.DTOs.SessionRatingSummaryDto>())
+        {
+            var presenterRate = s.AveragePresenterRate ;
+            var sessionRate = s.AverageSessionRate;
+            <div class="card">
+                <h3>@s.SessionName</h3>
+                <div class="sub">Presenter: @s.PresenterName</div>
+
+                <div class="stats">
+                    <div>
+                        <div class="number">@presenterRate.ToString("0.0")</div>
+                        <div class="label">Presenter Rate</div>
+                    </div>
+                    <div>
+                        <div class="number">@sessionRate.ToString("0.0")</div>
+                        <div class="label">Session Rate</div>
+                    </div>
+                    <div>
+                        <div class="number">@s.TotalRatings</div>
+                        <div class="label">Total Ratings</div>
+                    </div>
+                </div>
+
+                <div class="stars">
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        var cls = i <= Math.Round(presenterRate) ? "star filled" : "star";
+                        <span class="@cls">
+                            @Html.Raw("<svg viewBox='0 0 24 24'><path d='M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z'/></svg>")
+                        </span>
+                    }
+                </div>
+
+                <div class="stars" style="margin-top:6px;">
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        var cls2 = i <= Math.Round(sessionRate) ? "star filled" : "star";
+                        <span class="@cls2">
+                            @Html.Raw("<svg viewBox='0 0 24 24'><path d='M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z'/></svg>")
+                        </span>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>

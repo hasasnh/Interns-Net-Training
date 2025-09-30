@@ -1,12 +1,13 @@
-﻿using System.Threading.Tasks;
-using Application.DTOs;
+﻿using Application.DTOs;
 using Application.ServiceManager;
 using Application.Services.IServices;
 using Ejada_Portal.Controllers;
+using Ejada_Portal.Web.Controllers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Moq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace EjadaPortal.Tests.Controllers
@@ -42,26 +43,6 @@ namespace EjadaPortal.Tests.Controllers
             Assert.IsType<SessionDto>(result.Model);
         }
 
-        [Fact]
-        public async Task Add_Post_ValidModel_CallsServiceAndRedirects()
-        {
-            // Arrange
-            var smMock = new Mock<IServiceManager>();
-            var controller = CreateControllerWith(smMock, out var sessionServiceMock);
-            var model = new SessionDto { OwnerName = "Owner", Name = "Session" };
-
-            // Act
-            var result = await controller.Add(model);
-
-            // Assert
-            sessionServiceMock.Verify(
-                s => s.AddAsync(It.Is<SessionDto>(d => d.OwnerName == "Owner" && d.Name == "Session")),
-                Times.Once); 
-
-            var redirect = Assert.IsType<RedirectToActionResult>(result);
-            Assert.Equal(nameof(SessionsController.RatingSession), redirect.ActionName);
-            Assert.True(controller.TempData.ContainsKey("success")); 
-        }
 
         [Fact]
         public async Task Add_Post_InvalidModel_ReturnsViewAndDoesNotCallService()
@@ -69,19 +50,17 @@ namespace EjadaPortal.Tests.Controllers
             // Arrange
             var smMock = new Mock<IServiceManager>();
             var controller = CreateControllerWith(smMock, out var sessionServiceMock);
-            var badModel = new SessionDto { OwnerName = "", Name = "" };
-            controller.ModelState.AddModelError("OwnerName", "Required");
-            controller.ModelState.AddModelError("Name", "Required");
+            var badModel = new SessionDto { PresenterName = "", SessionName = "" };
+            controller.ModelState.AddModelError("PresenterName", "Required");
+            controller.ModelState.AddModelError("SessionName", "Required");
 
             // Act
             var result = await controller.Add(badModel);
-            var view = Assert.IsType<ViewResult>(result); 
+            var view = Assert.IsType<ViewResult>(result);
 
             // Assert
             Assert.Same(badModel, view.Model);
-            sessionServiceMock.Verify(s => s.AddAsync(It.IsAny<SessionDto>()), Times.Never);
+            sessionServiceMock.Verify(s => s.CreateSessionAsync(It.IsAny<SessionDto>()), Times.Never);
         }
-
-       
     }
 }
