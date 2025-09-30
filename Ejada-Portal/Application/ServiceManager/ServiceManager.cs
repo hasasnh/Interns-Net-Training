@@ -13,6 +13,7 @@ namespace Application.ServiceManager
         public Lazy<IUserService> _userService { get; private set; }
         public Lazy<IAssignRolesService> _assignRolesService { get; private set; }
         public Lazy<ISessionService> _sessionService { get; private set; }
+        public Lazy<IJiraService> _jiraService { get; private set; }
         private readonly Lazy<IContributorService> _contributorService;
        
         public ServiceManager(
@@ -22,13 +23,14 @@ namespace Application.ServiceManager
             RoleManager<IdentityRole> roleManager,
             ApplicationDbContext db,
             IEmailProviderResolver resolver,
-            IEmailTemplateRenderer templateRenderer)
+            IEmailTemplateRenderer templateRenderer,
+            IHttpClientFactory factory)
         {
             _userService = new Lazy<IUserService>(() => new UserService(unitOfWork, userManager, signInManager, resolver, templateRenderer));
             _assignRolesService = new Lazy<IAssignRolesService>(() => new AssignRolesService(userManager, roleManager));
             _sessionService = new Lazy<ISessionService>(() => new SessionService(unitOfWork));
+            _jiraService = new Lazy<IJiraService>(() => new JiraService(factory));
 
-            
             _contributorService = new Lazy<IContributorService>(() => new ContributorService(unitOfWork));
         }
 
@@ -36,5 +38,6 @@ namespace Application.ServiceManager
         public IContributorService ContributorService => _contributorService.Value;
         public IAssignRolesService AssignRolesService => _assignRolesService.Value;
         public ISessionService SessionService => _sessionService.Value;
+        public IJiraService JiraService => _jiraService.Value;
     }
 }
