@@ -8,6 +8,7 @@ namespace Application.ServiceManager
         IContributorService ContributorService { get; }
         IAssignRolesService AssignRolesService { get; }
         ISessionService SessionService { get; }
+        IJiraService JiraService { get; }
     }
 
 }

@@ -29,7 +29,7 @@ namespace EjadaPortal.Tests.Tests.Controllers
             redirect!.ActionName.Should().Be("Index");
             redirect.ControllerName.Should().Be("Home");
 
-            // Verify call
+            // Verify call - Verifies that AuthenticateAsync was called once.
             authServiceMock.Verify(a =>
                 a.AuthenticateAsync(controller.HttpContext, null), Times.Once);
         }
@@ -42,6 +42,7 @@ namespace EjadaPortal.Tests.Tests.Controllers
             var controller = AuthControllerTestHelper.CreateUserControllerWithContext(
                 userServiceMock, out var authServiceMock, true);
 
+            // Fakes AuthenticateAsync returning null (no token)
             authServiceMock
                 .Setup(a => a.AuthenticateAsync(It.IsAny<HttpContext>(), null))
                 .ReturnsAsync((AuthenticateResult)null);
@@ -59,6 +60,7 @@ namespace EjadaPortal.Tests.Tests.Controllers
         [Fact]
         public async Task Login_WhenHttpContextIsNull_ShouldThrow()
         {
+            //controller without HttpContext.
             var controller = new UserController(new Mock<IServiceManager>().Object);
 
             await Assert.ThrowsAsync<NullReferenceException>(() => controller.Login());

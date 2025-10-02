@@ -1,0 +1,462 @@
+﻿@{
+    ViewData["Title"] = "Calendar";
+    Layout = "_Layout";
+}
+
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+
+<style>
+    .wrap {
+        max-width: 1100px;
+        margin: 18px auto;
+        padding: 0 12px
+    }
+
+    .controls {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        margin-bottom: 10px
+    }
+
+    .hint {
+        color: #667085
+    }
+
+    #calendar {
+        margin-top: 6px
+    }
+
+    .btn {
+        --bg: linear-gradient(135deg, #2563eb, #22c55e);
+        --border: rgba(37,99,235,.35);
+        padding: 10px 16px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: var(--bg);
+        color: #fff;
+        cursor: pointer;
+        font-weight: 800;
+        box-shadow: 0 10px 20px rgba(37,99,235,.18);
+        transition: transform .12s ease, filter .12s ease, box-shadow .12s ease, opacity .12s ease;
+    }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            filter: saturate(1.05) brightness(1.03)
+        }
+
+        .btn:active {
+            transform: translateY(0)
+        }
+
+        .btn:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(37,99,235,.18)
+        }
+
+        .btn[disabled] {
+            opacity: .6;
+            cursor: not-allowed;
+            transform: none
+        }
+
+    .legend {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        color: #667085;
+        font-size: .9rem;
+        margin-top: 8px
+    }
+
+    .sw {
+        width: 10px;
+        height: 10px;
+        border-radius: 3px;
+        display: inline-block
+    }
+
+        .sw.blue {
+            background: #2d7dff
+        }
+
+        .sw.red {
+            background: #ff6b6b
+        }
+
+        .sw.yellow {
+            background: #ffd166
+        }
+
+        .sw.gray {
+            background: #9aa6b2
+        }
+
+    .fc .evt-progress {
+        background: #2563eb !important;
+        border-color: #1d4ed8 !important;
+        color: #fff !important
+    }
+
+    .fc .evt-late {
+        background: #ef4444 !important;
+        border-color: #dc2626 !important;
+        color: #fff !important
+    }
+
+    .fc .evt-dep {
+        background: #f59e0b !important;
+        border-color: #d97706 !important;
+        color: #1f2937 !important
+    }
+
+    .fc .evt-normal {
+        background: #94a3b8 !important;
+        border-color: #64748b !important;
+        color: #fff !important
+    }
+
+    .fc-event-main .pill {
+        display: inline-block;
+        font-size: .72rem;
+        padding: 2px 6px;
+        border-radius: 999px;
+        background: rgba(255,255,255,.24);
+        margin-left: 6px
+    }
+
+    /* ===== Fullscreen Loading Overlay ===== */
+    body.loading {
+        overflow: hidden
+    }
+
+    .mask-full {
+        position: fixed;
+        inset: 0;
+        z-index: 100000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        background: rgba(15,23,42,.55);
+        backdrop-filter: blur(3px) saturate(0.9);
+    }
+
+        .mask-full.active {
+            display: flex
+        }
+
+    .loader {
+        display: grid;
+        place-items: center;
+        gap: 14px;
+        color: #fff;
+        text-align: center;
+        font-weight: 800;
+        letter-spacing: .3px
+    }
+
+    .ring {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        border: 5px solid rgba(255,255,255,.25);
+        border-top-color: #fff;
+        animation: spin .9s linear infinite;
+        box-shadow: 0 0 0 1px rgba(255,255,255,.05) inset
+    }
+
+    .dots {
+        display: inline-flex;
+        gap: 6px
+    }
+
+    .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #fff;
+        opacity: .4;
+        animation: pulse 1.2s ease-in-out infinite
+    }
+
+        .dot:nth-child(2) {
+            animation-delay: .15s
+        }
+
+        .dot:nth-child(3) {
+            animation-delay: .3s
+        }
+
+    .cm-mask {
+        position: fixed;
+        inset: 0;
+        z-index: 100002; /* أعلى من أي شيء */
+        display: none;
+        align-items: center;
+        justify-content: center;
+        background: rgba(15,23,42,.55);
+        backdrop-filter: blur(2px);
+        visibility: hidden;
+    }
+
+        .cm-mask.cm-active {
+            display: flex !important;
+            visibility: visible !important
+        }
+
+    .cm-card {
+        width: min(520px, 92vw);
+        background: #fff;
+        color: #0f172a;
+        border-radius: 16px;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 24px 60px rgba(2,6,23,.18);
+        overflow: hidden;
+    }
+
+    .cm-hd {
+        padding: 14px 16px;
+        border-bottom: 1px solid #eef2f7;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: linear-gradient(180deg,#f9fafb,#f3f4f6);
+    }
+
+    .cm-ttl {
+        margin: 0;
+        font-size: 1.05rem;
+        font-weight: 800;
+        letter-spacing: .2px
+    }
+
+    .cm-close {
+        border: 0;
+        background: #111827;
+        color: #fff;
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 800;
+    }
+
+    .cm-bd {
+        padding: 16px
+    }
+
+    .cm-kv {
+        display: grid;
+        grid-template-columns: 140px 1fr;
+        gap: 10px;
+        align-items: start;
+        margin-bottom: 10px
+    }
+
+    .cm-k {
+        font-weight: 800;
+        color: #1f2937
+    }
+
+    .cm-v {
+        color: #334155
+    }
+
+    .cm-ft {
+        padding: 12px 16px;
+        border-top: 1px solid #eef2f7;
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px
+    }
+
+    .cm-ghost {
+        background: #fff;
+        color: #111827;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        padding: 9px 14px;
+        font-weight: 800;
+        cursor: pointer;
+    }
+
+        .cm-ghost:hover {
+            background: #f3f4f6
+        }
+</style>
+
+<div class="wrap">
+    <div class="controls">
+        <button id="btnReload" class="btn">Reload</button>
+        <span id="msg" class="hint"></span>
+        <span id="sel" class="hint" style="margin-left:auto">No selection</span>
+    </div>
+
+    <div class="legend">
+        <span><i class="sw blue"></i> On-Progress</span>
+        <span><i class="sw red"></i> Late</span>
+        <span><i class="sw yellow"></i> Has Dependency</span>
+        <span><i class="sw gray"></i> Other</span>
+    </div>
+
+    <div id="calendar" aria-live="polite"></div>
+</div>
+
+<!-- Fullscreen Loading Mask -->
+<div id="loadingMask" class="mask-full" aria-hidden="true">
+    <div class="loader" role="status" aria-label="Loading">
+        <div class="ring"></div>
+        <div>Loading<span class="dots"><i class="dot"></i><i class="dot"></i><i class="dot"></i></span></div>
+    </div>
+</div>
+
+<!-- Custom Modal (no Bootstrap conflict) -->
+<div id="taskModal" class="cm-mask" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="taskModalTitle">
+    <div class="cm-card">
+        <div class="cm-hd">
+            <h3 id="taskModalTitle" class="cm-ttl">Task Details</h3>
+            <button id="modalClose" class="cm-close" aria-label="Close">×</button>
+        </div>
+        <div class="cm-bd">
+            <div class="cm-kv"><div class="cm-k">Summary</div><div class="cm-v" id="mSummary">—</div></div>
+            <div class="cm-kv"><div class="cm-k">Status</div><div class="cm-v" id="mStatus">—</div></div>
+            <div class="cm-kv"><div class="cm-k">Start Date</div><div class="cm-v" id="mStart">—</div></div>
+            <div class="cm-kv"><div class="cm-k">End Date</div><div class="cm-v" id="mEnd">—</div></div>
+        </div>
+        <div class="cm-ft">
+            <button id="modalOk" class="cm-ghost">OK</button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        (() => {
+          const btnReload = document.getElementById('btnReload');
+          const msg = document.getElementById('msg');
+          const sel = document.getElementById('sel');
+          const mask = document.getElementById('loadingMask');
+
+          const modalMask = document.getElementById('taskModal');
+          const modalClose = document.getElementById('modalClose');
+          const modalOk = document.getElementById('modalOk');
+          const mSummary = document.getElementById('mSummary');
+          const mStatus  = document.getElementById('mStatus');
+          const mStart   = document.getElementById('mStart');
+          const mEnd     = document.getElementById('mEnd');
+
+          let calendar, selectedKey = null;
+
+          function showMask(){
+            document.body.classList.add('loading');
+            mask.classList.add('active');
+            mask.setAttribute('aria-hidden', 'false');
+            btnReload.disabled = true;
+          }
+          function hideMask(){
+            document.body.classList.remove('loading');
+            mask.classList.remove('active');
+            mask.setAttribute('aria-hidden', 'true');
+            btnReload.disabled = false;
+          }
+
+          function openModal({ summary, status, start, end }){
+            mSummary.textContent = summary ?? '—';
+            mStatus.textContent  = status ?? '—';
+            mStart.textContent   = start ?? '—';
+            mEnd.textContent     = end ?? '—';
+            modalMask.classList.add('cm-active');
+            modalMask.setAttribute('aria-hidden', 'false');
+          }
+          function closeModal(){
+            modalMask.classList.remove('cm-active');
+            modalMask.setAttribute('aria-hidden', 'true');
+          }
+          modalClose.addEventListener('click', closeModal);
+          modalOk.addEventListener('click', closeModal);
+          modalMask.addEventListener('click', (e)=>{ if(e.target === modalMask) closeModal(); });
+          document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeModal(); });
+
+          function fmt(d){
+            if(!d) return null;
+            const y = d.getFullYear();
+            const m = String(d.getMonth()+1).padStart(2,'0');
+            const day = String(d.getDate()).padStart(2,'0');
+            return `${y}-${m}-${day}`;
+          }
+
+          function render(events){
+            const el = document.getElementById('calendar');
+            if (!calendar){
+              calendar = new FullCalendar.Calendar(el, {
+                initialView: 'dayGridMonth',
+                height: 'auto',
+                headerToolbar: { left: 'prev,next today', center: 'title', right: '' },
+                firstDay: 0,
+                eventContent: arg => {
+                  const status = arg.event.extendedProps?.status;
+                  const div = document.createElement('div');
+                  div.innerHTML = `<span>${arg.event.title}</span>${status ? `<span class="pill">${status}</span>` : ''}`;
+                  return { domNodes: [div] };
+                },
+                eventDidMount: (info) => {
+                  const assignee = info.event.extendedProps?.assignee ?? 'Unassigned';
+                  const status   = info.event.extendedProps?.status ?? '';
+                  info.el.setAttribute('title', `Assignee: ${assignee}${status ? ` | Status: ${status}` : ''}`);
+                },
+                eventClick: (info) => {
+                  info.jsEvent?.preventDefault?.();
+                  info.jsEvent?.stopPropagation?.();
+
+                  selectedKey = info.event.id;
+                  sel.textContent = `Selected: ${info.event.title} (${selectedKey})`;
+
+                  const rawStart = info.event.start;
+                  const rawEndEx = info.event.end;
+                  let dispEnd = rawStart;
+                  if(rawEndEx){
+                    const tmp = new Date(rawEndEx);
+                    tmp.setDate(tmp.getDate() - 1);
+                    dispEnd = tmp;
+                  }
+
+                  openModal({
+                    summary: info.event.title,
+                    status: info.event.extendedProps?.status ?? '—',
+                    start: fmt(rawStart),
+                    end: fmt(dispEnd)
+                  });
+                }
+              });
+              calendar.render();
+            }
+            calendar.removeAllEvents();
+            events.forEach(e => calendar.addEvent(e));
+          }
+
+          async function load(){
+            try{
+              showMask();
+              msg.textContent = 'Loading...';
+              const res = await fetch(`/api/jira/Issues?_=${Date.now()}`, { cache: 'no-store' });
+              if (!res.ok){ msg.textContent = 'Failed'; return; }
+                     const data = await res.json();
+        render(data.events || []);
+        msg.textContent = `Loaded sprint ${data.sprintId} with ${(data.events||[]).length} tasks`;
+
+              selectedKey = null; sel.textContent = 'No selection';
+            }catch(e){
+              console.error(e);
+              msg.textContent = 'Error';
+            } finally {
+              hideMask();
+            }
+          }
+
+          btnReload.addEventListener('click', load);
+          load();
+        })();
+    </script>
+}

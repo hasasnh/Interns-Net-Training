@@ -39,8 +39,25 @@ builder.Services.AddScoped<IEmailTemplateRenderer, FileEmailTemplateRenderer>();
 // Infra & Services
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+builder.Services.AddHttpClient("Jira", client =>
+{
+    var jiraSection = builder.Configuration.GetSection("Jira");
+    var email = jiraSection["Email"];
+    var apiToken = jiraSection["ApiToken"];
+    var baseUrl = jiraSection["BaseUrl"];
 
+    string auth = Convert.ToBase64String(
+        System.Text.Encoding.ASCII.GetBytes($"{email}:{apiToken}")
+    );
 
+    client.BaseAddress = new Uri(baseUrl);
+    client.DefaultRequestHeaders.Authorization =
+        new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", auth);
+    client.DefaultRequestHeaders.Accept.Add(
+        new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+});
+
+//builder.Services.AddScoped<JiraService>();
 
 // ServiceManager
 builder.Services.AddScoped<IServiceManager, ServiceManager>();
