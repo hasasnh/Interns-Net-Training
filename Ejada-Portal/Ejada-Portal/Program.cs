@@ -80,6 +80,10 @@ builder.Services.AddAuthentication
               {
                   //The Authority indicates where the trusted token service is located
                   options.Authority = builder.Configuration["ServiceUrls:IdentityAPI"];
+                  options.BackchannelHttpHandler = new HttpClientHandler
+                  {
+                      ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+                  };
                   options.GetClaimsFromUserInfoEndpoint = true;
                   options.ClientId = "magic";
                   options.ClientSecret = "secret";
@@ -114,7 +118,7 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
-
+app.UseDeveloperExceptionPage();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();

@@ -53,9 +53,9 @@ namespace Ejada_IdentityServer
                         JwtClaimTypes.Role
                     },
                     // where to redirect to after login
-                    RedirectUris={ "https://localhost:7002/signin-oidc" },
+                    RedirectUris={ "https://ejada.portal/signin-oidc" },
                     // where to redirect to after logout
-                    PostLogoutRedirectUris={"https://localhost:7002/signout-callback-oidc" },
+                    PostLogoutRedirectUris={"https://ejada.portal/signout-callback-oidc" },
                     AllowOfflineAccess = true   //added for refresh tokens
                 }
             };

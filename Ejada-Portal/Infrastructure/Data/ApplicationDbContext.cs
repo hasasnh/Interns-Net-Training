@@ -16,6 +16,7 @@ namespace Infrastructure.Data
             }
             public DbSet<PagePermission> PagePermissions { get; set; }
             public DbSet<Session> Sessions { get; set; }
+            public DbSet<User> Users { get; set; }
 
     }
 
