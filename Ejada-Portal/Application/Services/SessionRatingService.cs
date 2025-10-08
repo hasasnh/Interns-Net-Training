@@ -109,12 +109,26 @@ namespace Application.Services
                     PresenterName = s.PresenterName,
                     AveragePresenterRate = ratings.Average(r => r.RatePresenter),
                     AverageSessionRate = ratings.Average(r => r.RateSession),
-                    TotalRatings = ratings.Count()
+                    TotalRatings = ratings.Count(),
+                    Ratings = ratings.Select(r => new SessionRatingDto
+                    {
+                        Id = r.Id,
+                        SessionId = r.SessionId,
+                        SessionName = r.Session?.SessionName,
+                        PresenterName = r.Session?.PresenterName,
+                        RatePresenter = r.RatePresenter,
+                        RateSession = r.RateSession,
+                        Comments = r.Comments,
+                        UserId = r.UserId,
+                        // إذا عندك UserName من Identity
+                        UserName = r.User?.UserName ?? "Unknown User"
+                    }).ToList()
                 });
             }
 
             return result;
         }
+
 
     }
 }

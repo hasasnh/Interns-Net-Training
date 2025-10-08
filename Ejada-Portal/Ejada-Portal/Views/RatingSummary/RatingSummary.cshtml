@@ -6,11 +6,11 @@
 
 <style>
     :root {
-        --bg: #0b1020;
-        --card: #121933;
+        --bg: #f9f9f9;
+        --card: #ffffff;
         --muted: #7c8db5;
-        --text: #e9edff;
-        --border: rgba(255,255,255,.08);
+        --text: #222;
+        --border: #e0e0e0;
         --brand: #2d7dff;
         --gold: #ffd700;
         --silver: #bbb;
@@ -48,14 +48,14 @@
         border: 1px solid var(--border);
         border-radius: 16px;
         overflow: hidden;
-        box-shadow: 0 8px 25px rgba(0,0,0,.35);
+        box-shadow: 0 4px 12px rgba(0,0,0,.1);
         padding: 24px;
         transition: transform 0.2s, box-shadow 0.2s;
     }
 
         .card:hover {
             transform: translateY(-6px);
-            box-shadow: 0 12px 30px rgba(0,0,0,.45);
+            box-shadow: 0 8px 25px rgba(0,0,0,.15);
         }
 
         .card h3 {
@@ -110,6 +110,35 @@
         fill: var(--gold);
         transform: scale(1.2);
     }
+
+    .comments {
+        margin-top: 16px;
+        border-top: 1px solid var(--border);
+        padding-top: 12px;
+    }
+
+        .comments h4 {
+            color: var(--text);
+            font-size: 1rem;
+            margin-bottom: 8px;
+        }
+
+    .comment-item {
+        margin-bottom: 8px;
+        color: var(--text);
+        font-size: 0.9rem;
+    }
+
+        .comment-item strong {
+            color: var(--brand);
+        }
+
+    .comment-rates {
+        color: var(--gold);
+        font-weight: 600;
+        margin-left: 6px;
+    }
+
 </style>
 
 <div class="wrap">
@@ -117,7 +146,7 @@
     <div class="grid">
         @foreach (var s in Model ?? Enumerable.Empty<Application.DTOs.SessionRatingSummaryDto>())
         {
-            var presenterRate = s.AveragePresenterRate ;
+            var presenterRate = s.AveragePresenterRate;
             var sessionRate = s.AverageSessionRate;
             <div class="card">
                 <h3>@s.SessionName</h3>
@@ -155,6 +184,26 @@
                         <span class="@cls2">
                             @Html.Raw("<svg viewBox='0 0 24 24'><path d='M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z'/></svg>")
                         </span>
+                    }
+                </div>
+
+                <!-- Comments Section -->
+                <div class="comments">
+                    <h4>Comments:</h4>
+                    @if (s.Ratings != null && s.Ratings.Any())
+                    {
+                        @foreach (var r in s.Ratings)
+                        {
+                            <div class="comment-item">
+                                <strong>@r.UserName:</strong>
+                                <span>@r.Comments</span>
+                                <span class="comment-rates">(Session: @r.RateSession, Presenter: @r.RatePresenter)</span>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="comment-item" style="font-style: italic; color: var(--muted);">No comments yet.</div>
                     }
                 </div>
             </div>

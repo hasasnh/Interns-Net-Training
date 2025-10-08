@@ -34,9 +34,10 @@ namespace Infrastructure.Repository
         public async Task<IEnumerable<SessionRating>> GetBySessionIdAsync(int sessionId)
         {
             return await _db.SessionRatings
-                .Where(r => r.SessionId == sessionId)
-                .Include(r => r.Session)
-                .ToListAsync();
+        .Where(r => r.SessionId == sessionId)
+        .Include(r => r.User)  // <-- هذه مهمة لجلب بيانات المستخدم
+        .Include(r => r.Session)
+        .ToListAsync();
         }
     }
 }

@@ -24,6 +24,6 @@ namespace Application.DTOs
 
         public string Comments { get; set; }
         public string UserId { get; set; }
-
+        public string UserName { get; internal set; }
     }
 }

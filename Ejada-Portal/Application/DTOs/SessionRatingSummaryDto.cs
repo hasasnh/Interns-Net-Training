@@ -14,5 +14,7 @@ namespace Application.DTOs
         public double AveragePresenterRate { get; set; }
         public double AverageSessionRate { get; set; }
         public int TotalRatings { get; set; }
+        public List<SessionRatingDto> Ratings { get; set; } = new();
+
     }
 }
