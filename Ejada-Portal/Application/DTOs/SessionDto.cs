@@ -1,15 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Domain.Entities;
+using System.ComponentModel.DataAnnotations;
 
 namespace Application.DTOs
 {
     public class SessionDto
     {
         public int Id { get; set; }
+        public string PresenterName { get; set; }
+        public string SessionName { get; set; }
 
-        [Required, MaxLength(100)]
-        public string OwnerName { get; set; } = string.Empty;
-
-        [Required, MaxLength(200)]
-        public string Name { get; set; } = string.Empty;
+        public ICollection<SessionRatingDto> Ratings { get; set; } = new List<SessionRatingDto>();
     }
 }

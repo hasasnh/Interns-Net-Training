@@ -7,10 +7,10 @@ namespace Infrastructure.Repository.IRepository
 {
     public interface ISessionRepository
     {
-        List<Session> GetAll();
-        Session? Get(Expression<Func<Session, bool>> filter);
-        void Create(Session entity);
-        void Update(Session entity);
-        void Delete(Session entity);
+        Task<Session> GetByIdAsync(int id);
+        Task<IEnumerable<Session>> GetAllAsync();
+        Task AddAsync(Session session);
+        Task UpdateAsync(Session session);
+        Task DeleteAsync(int id);
     }
 }

@@ -2,33 +2,33 @@
 using Infrastructure.Data;
 using Infrastructure.Repository.IRepository;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
+using System.Threading.Tasks;
 
 namespace Infrastructure.Repository
 {
     public class SessionRepository : ISessionRepository
     {
         private readonly ApplicationDbContext _db;
-        internal DbSet<Session> set;
+        public SessionRepository(ApplicationDbContext db) => _db = db;
 
-        public SessionRepository(ApplicationDbContext db)
+        public async Task<Session> GetByIdAsync(int id) => await _db.Sessions.FindAsync(id);
+        public async Task<IEnumerable<Session>> GetAllAsync() => await _db.Sessions.ToListAsync();
+        public async Task AddAsync(Session session)
         {
-            _db = db;
-            set = _db.Set<Session>();
+            await _db.Sessions.AddAsync(session);
+            await _db.SaveChangesAsync();
         }
-
-        public void Create(Session entity) => set.Add(entity);
-
-        public void Delete(Session entity) => set.Remove(entity);
-
-        public Session? Get(Expression<Func<Session, bool>> filter)
-            => set.Where(filter).FirstOrDefault();
-
-        public List<Session> GetAll() => set.OrderByDescending(s => s.CreatedAt).ToList();
-
-        public void Update(Session entity) => set.Update(entity);
+        public async Task UpdateAsync(Session session)
+        {
+            _db.Sessions.Update(session);
+            await _db.SaveChangesAsync();
+        }
+        public async Task DeleteAsync(int id)
+        {
+            var s = await _db.Sessions.FindAsync(id);
+            if (s != null) _db.Sessions.Remove(s);
+            await _db.SaveChangesAsync();
+        }
     }
 }
