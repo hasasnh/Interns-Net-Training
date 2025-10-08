@@ -3,9 +3,7 @@ using Application.Services.IServices;
 using Domain.Entities;
 using Infrastructure.Data;
 using Infrastructure.Repository;
-using Infrastructure.Repository.IRepository;
 using Microsoft.AspNetCore.Identity;
-using System;
 
 namespace Application.ServiceManager
 {
@@ -15,10 +13,7 @@ namespace Application.ServiceManager
         public Lazy<IAssignRolesService> _assignRolesService { get; private set; }
         public Lazy<ISessionService> _sessionService { get; private set; }
         public Lazy<IJiraService> _jiraService { get; private set; }
-        private readonly Lazy<IUserService> _userService;
-        private readonly Lazy<IAssignRolesService> _assignRolesService;
         private readonly Lazy<IContributorService> _contributorService;
-        private readonly Lazy<ISessionService> _sessionService;
         private readonly Lazy<ISessionRatingService> _sessionRatingService;
 
         public ServiceManager(
@@ -30,12 +25,6 @@ namespace Application.ServiceManager
             IEmailTemplateRenderer templateRenderer,
             IHttpClientFactory factory)
         {
-            _userService = new Lazy<IUserService>(() => new UserService(unitOfWork, userManager, signInManager, resolver, templateRenderer));
-            _assignRolesService = new Lazy<IAssignRolesService>(() => new AssignRolesService(userManager, roleManager));
-            _sessionService = new Lazy<ISessionService>(() => new SessionService(unitOfWork));
-            _jiraService = new Lazy<IJiraService>(() => new JiraService(factory));
-
-            _contributorService = new Lazy<IContributorService>(() => new ContributorService(unitOfWork));
             var unitOfWork = new UnitOfWork(dbContext);
 
             _userService = new Lazy<IUserService>(() =>
@@ -48,11 +37,12 @@ namespace Application.ServiceManager
                 new ContributorService(unitOfWork));
 
             _sessionService = new Lazy<ISessionService>(() =>
-             new SessionService(unitOfWork)); 
-
+                new SessionService(unitOfWork));
 
             _sessionRatingService = new Lazy<ISessionRatingService>(() =>
                 new SessionRatingService(unitOfWork.SessionRating, unitOfWork.Session));
+
+            _jiraService = new Lazy<IJiraService>(() => new JiraService(factory));
         }
 
         public IUserService UserService => _userService.Value;
