@@ -1,0 +1,260 @@
+﻿@model IEnumerable<Application.DTOs.SessionDto>
+@{
+    ViewData["Title"] = "Rating Session";
+}
+
+<style>
+    :root {
+        --bg: #0b1020;
+        --card: #121933;
+        --muted: #7c8db5;
+        --text: #e9edff;
+        --border: rgba(255,255,255,.08);
+        --brand: #2d7dff;
+    }
+
+    .wrap {
+        max-width: 1200px;
+        margin: 32px auto;
+        padding: 0 18px;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .top h2 {
+        color: var(--text);
+        margin-bottom: 24px;
+    }
+
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill,minmax(300px,1fr));
+        gap: 20px;
+    }
+
+    .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 8px 20px rgba(0,0,0,.35);
+        transition: transform .2s;
+    }
+
+        .card:hover {
+            transform: translateY(-4px);
+        }
+
+    .card-hd {
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .ttl {
+        margin: 0;
+        color: var(--text);
+        font-weight: 700;
+        font-size: 1.1rem;
+    }
+
+    .sub {
+        color: var(--muted);
+        font-size: 0.9rem;
+        margin-top: 4px;
+    }
+
+    .card-bd {
+        padding: 16px 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .row {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .lbl {
+        color: var(--text);
+        font-weight: 600;
+    }
+
+    .cmt {
+        width: 100%;
+        min-height: 70px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: rgba(255,255,255,.04);
+        color: var(--text);
+        padding: 8px 12px;
+        outline: none;
+    }
+
+    .actions {
+        padding: 12px 20px;
+        border-top: 1px solid var(--border);
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .btn {
+        border: 2px solid var(--brand);
+        background: linear-gradient(180deg, rgba(45,125,255,.2), transparent);
+        color: var(--text);
+        border-radius: 12px;
+        font-weight: 700;
+        padding: 8px 16px;
+        cursor: pointer;
+        transition: all .2s;
+    }
+
+        .btn:hover {
+            background: var(--brand);
+            color: #fff;
+        }
+
+    .rate {
+        display: inline-flex;
+        gap: 6px;
+        cursor: pointer;
+    }
+
+        .rate input {
+            display: none;
+        }
+
+    .star svg {
+        width: 24px;
+        height: 24px;
+        fill: #ccc;
+        transition: fill .2s, transform .2s;
+    }
+
+    .star.selected svg {
+        fill: gold;
+    }
+
+    .star:hover svg,
+    .rate[data-value] .star svg {
+        fill: var(--brand);
+        transform: scale(1.1);
+    }
+
+    .help {
+        font-size: 0.8rem;
+        color: var(--muted);
+        margin-top: 2px;
+    }
+
+</style>
+
+<div class="wrap">
+    <div class="top"><h2>Rating Session</h2></div>
+
+    <div class="grid">
+        @foreach (var s in Model)
+        {
+            <form class="card rating-form" data-session-id="@s.Id" method="post" asp-controller="RatingSession" asp-action="Rate">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="SessionId" value="@s.Id" />
+
+                <div class="card-hd">
+                    <div>
+                        <div class="sub">Presenter</div>
+                        <h3 class="ttl">@s.PresenterName</h3>
+                        <div class="sub" style="margin-top:8px">Session</div>
+                        <h4 class="ttl">@s.SessionName</h4>
+                    </div>
+                </div>
+
+                <div class="card-bd">
+                    <div class="row">
+                        <div class="lbl">Rate Presenter</div>
+                        <div class="rate presenter-rate">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                <label class="star">
+                                    <input type="radio" name="PresenterRate" value="@i" />
+                                    @Html.Raw("<svg viewBox='0 0 24 24'><path d='M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z'/></svg>")
+                                </label>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="lbl">Rate Session</div>
+                        <div class="rate session-rate">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                <label class="star">
+                                    <input type="radio" name="SessionRate" value="@i" />
+                                    @Html.Raw("<svg viewBox='0 0 24 24'><path d='M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z'/></svg>")
+                                </label>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <label class="lbl">Comment</label>
+                        <textarea name="Comment" class="cmt" placeholder="Write your opinion..."></textarea>
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <button type="submit" class="btn">Save</button>
+                </div>
+            </form>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.rating-form').forEach(form=>{
+            const sessionId = form.dataset.sessionId;
+            const presenterStars = form.querySelectorAll('.presenter-rate input');
+            const sessionStars = form.querySelectorAll('.session-rate input');
+
+            const bindStars = (stars)=>{
+                stars.forEach(star=>{
+                    star.addEventListener('change',()=>{
+                        stars.forEach(s=>s.parentElement.classList.remove('selected'));
+                        for(let i=0;i<star.value;i++){
+                            stars[i].parentElement.classList.add('selected');
+                        }
+                    });
+                });
+            };
+
+            bindStars(presenterStars);
+            bindStars(sessionStars);
+
+            form.addEventListener('submit', async e=>{
+                e.preventDefault();
+                const fd = new FormData(form);
+
+                try{
+                    const token = form.querySelector('input[name="__RequestVerificationToken"]').value;
+                    const res = await fetch(form.action,{
+                        method:'POST',
+                        body: fd,
+                        headers: {'RequestVerificationToken': token}
+                    });
+
+                    if(res.ok){
+                        form.remove(); // إزالة الجلسة بعد التقييم
+                        alert('Rating saved successfully!');
+                    } else {
+                        alert('Error saving rating. Please try again.');
+                    }
+                }catch(err){
+                    console.error(err);
+                    alert('Error saving rating. Please try again.');
+                }
+            });
+        });
+    </script>
+}

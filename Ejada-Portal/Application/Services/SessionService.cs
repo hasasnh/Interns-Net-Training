@@ -1,5 +1,6 @@
 ﻿using Application.DTOs;
 using Application.Services.IServices;
+using Domain.Entities;
 using Infrastructure.Repository.IRepository;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,44 +10,71 @@ namespace Application.Services
 {
     public class SessionService : ISessionService
     {
-        private readonly IUnitOfWork _uow;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public SessionService(IUnitOfWork uow)
+        public SessionService(IUnitOfWork unitOfWork)
         {
-            _uow = uow;
+            _unitOfWork = unitOfWork;
         }
 
-        public SessionDto MapToDto(Domain.Entities.Session e)
+        public async Task<IEnumerable<SessionDto>> GetAllSessionsAsync()
         {
-            var dto = new SessionDto();
-            dto.Id = e.Id;
-            dto.OwnerName = e.OwnerName;
-            dto.Name = e.Name;
+            var sessions = await _unitOfWork.Session.GetAllAsync();
+            return sessions.Select(s => new SessionDto
+            {
+                Id = s.Id,
+                PresenterName = s.PresenterName,
+                SessionName = s.SessionName
+            });
+        }
+
+        public async Task<SessionDto> GetSessionByIdAsync(int id)
+        {
+            var s = await _unitOfWork.Session.GetByIdAsync(id);
+            if (s == null) return null;
+
+            return new SessionDto
+            {
+                Id = s.Id,
+                PresenterName = s.PresenterName,
+                SessionName = s.SessionName
+            };
+        }
+
+        public async Task<SessionDto> CreateSessionAsync(SessionDto dto)
+        {
+            var s = new Session
+            {
+                PresenterName = dto.PresenterName,
+                SessionName = dto.SessionName
+            };
+            await _unitOfWork.Session.AddAsync(s);
+            await _unitOfWork.SaveAsync();
+            dto.Id = s.Id;
             return dto;
         }
 
-        public Domain.Entities.Session MapToEntity(SessionDto d)
+        public async Task<SessionDto> UpdateSessionAsync(SessionDto dto)
         {
-            var entity = new Domain.Entities.Session();
-            entity.Id = d.Id;
-            entity.OwnerName = d.OwnerName;
-            entity.Name = d.Name;
-            return entity;
+            var s = await _unitOfWork.Session.GetByIdAsync(dto.Id);
+            if (s == null) return null;
+
+            s.PresenterName = dto.PresenterName;
+            s.SessionName = dto.SessionName;
+
+            await _unitOfWork.Session.UpdateAsync(s);
+            await _unitOfWork.SaveAsync();
+            return dto;
         }
 
-        public Task AddAsync(SessionDto dto)
+        public async Task<bool> DeleteSessionAsync(int id)
         {
-            var entity = MapToEntity(dto);
-            _uow.Session.Create(entity);
-            _uow.Save();
-            return Task.CompletedTask;
-        }
+            var s = await _unitOfWork.Session.GetByIdAsync(id);
+            if (s == null) return false;
 
-        public Task<IEnumerable<SessionDto>> GetAllAsync()
-        {
-            var list = _uow.Session .GetAll().Select(MapToDto).ToList();
-
-            return Task.FromResult<IEnumerable<SessionDto>>(list);
+            await _unitOfWork.Session.DeleteAsync(id);
+            await _unitOfWork.SaveAsync();
+            return true;
         }
     }
 }

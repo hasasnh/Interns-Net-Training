@@ -29,6 +29,8 @@ builder.Services.Configure<SmtpOptions>(builder.Configuration.GetSection("Smtp")
 
 builder.Services.AddScoped<GmailEmailProvider>();
 builder.Services.AddScoped<RnwoodEmailProvider>();
+builder.Services.AddScoped<ISessionRepository, SessionRepository>();
+builder.Services.AddScoped<ISessionRatingRepository, SessionRatingRepository>();
 
 // ??? ??? Resolver
 builder.Services.AddScoped<IEmailProviderResolver, EmailProviderResolver>();
